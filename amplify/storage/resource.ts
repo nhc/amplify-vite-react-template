@@ -1,14 +1,13 @@
 import { defineStorage } from "@aws-amplify/backend";
 
-enum AmplifyStorageNames {
-  IGSiteStorage = "IGSiteStorage",
-  IGCVStorage = "IGCVStorage",
-  IGJobSpecStorage = "IGJobSpecStorage",
-}
+// enum AmplifyStorageNames {
+//   IGSiteStorage = "IGSiteStorage",
+//   IGCVStorage = "IGCVStorage",
+//   IGJobSpecStorage = "IGJobSpecStorage",
+// }
 
-const IGSiteStorage: AmplifyStorageNames = AmplifyStorageNames.IGSiteStorage;
 export const siteStorage = defineStorage({
-  name: IGSiteStorage,
+  name: "IGSiteStorage",
   access: (allow) => ({
     "files/*": [allow.entity("identity").to(["read", "write", "delete"])],
   }),
@@ -19,17 +18,15 @@ export const siteStorage = defineStorage({
 export const cvStorage = defineStorage({
   name: "IGCVStorage",
   access: (allow) => ({
-    "cv/*": [allow.authenticated.to(["read", "write", "delete"])],
+    "cv/*": [allow.entity("identity").to(["read", "write", "delete"])],
   }),
   isDefault: true,
 });
 
-const IGJobSpecStorage: AmplifyStorageNames =
-  AmplifyStorageNames.IGJobSpecStorage;
 export const jobSpecStorage = defineStorage({
-  name: IGJobSpecStorage,
+  name: "IGJobSpecStorage",
   access: (allow) => ({
-    "specs/*": [allow.authenticated.to(["read", "write", "delete"])],
+    "specs/*": [allow.entity("identity").to(["read", "write", "delete"])],
   }),
   isDefault: true,
 });
