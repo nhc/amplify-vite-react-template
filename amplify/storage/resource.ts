@@ -20,7 +20,6 @@ export const cvStorage = defineStorage({
   access: (allow) => ({
     "cv/*": [allow.entity("identity").to(["read", "write", "delete"])],
   }),
-  isDefault: true,
 });
 
 export const jobSpecStorage = defineStorage({
@@ -28,5 +27,4 @@ export const jobSpecStorage = defineStorage({
   access: (allow) => ({
     "specs/*": [allow.entity("identity").to(["read", "write", "delete"])],
   }),
-  isDefault: true,
 });
