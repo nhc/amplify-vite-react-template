@@ -1,12 +1,15 @@
+import "@aws-amplify/ui-react/styles.css";
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-// import { FileUploader } from "@aws-amplify/ui-react-storage";
-// import { IGSiteStorage } from "../amplify/storage/resource";
+import { FileUploader } from "@aws-amplify/ui-react-storage";
+import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
 
 const client = generateClient<Schema>();
 
 function App() {
+  const { signOut, authStatus } = useAuthenticator((context) => [context.user]);
+
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
   useEffect(() => {
@@ -18,6 +21,14 @@ function App() {
   function createTodo() {
     client.models.Todo.create({ content: window.prompt("Todo content") });
   }
+
+  if (authStatus === "configuring") return <div>Loading...</div>;
+  if (authStatus !== "authenticated")
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Authenticator />
+      </div>
+    );
 
   return (
     <main>
@@ -36,17 +47,24 @@ function App() {
         </a>
       </div>
       <br />
-      {/* <FileUploader
-        bucket={IGSiteStorage}
+      <button
+        className="cursor-pointer bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 px-4"
+        onClick={signOut}
+      >
+        Sign out
+      </button>
+
+      <FileUploader
+        bucket={"IGCVStorage"}
         acceptedFileTypes={["pdf/*", "docx/*", "txt/*"]}
         path={({ identityId }) => `cv/${identityId}/`}
         maxFileCount={1}
         maxFileSize={1 * 1024 * 1024}
         isResumable
-        onUploadSuccess={async (file) => {
+        onUploadSuccess={(file) => {
           console.log("File uploaded successfully", file);
         }}
-      /> */}
+      />
     </main>
   );
 }
