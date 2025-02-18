@@ -4,6 +4,10 @@ import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { FileUploader } from "@aws-amplify/ui-react-storage";
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
+import { Amplify } from "aws-amplify";
+import outputs from "../amplify_outputs.json";
+
+Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
@@ -55,15 +59,15 @@ function App() {
       </button>
 
       <FileUploader
-        bucket={"IGCVStorage"}
+        bucket={"IGSiteStorage"}
         acceptedFileTypes={["pdf/*", "docx/*", "txt/*"]}
-        path={({ identityId }) => `cv/${identityId}/`}
+        path={({ identityId }) => `files/${identityId}/`}
         maxFileCount={1}
-        maxFileSize={1 * 1024 * 1024}
-        isResumable
-        onUploadSuccess={(file) => {
-          console.log("File uploaded successfully", file);
-        }}
+        // maxFileSize={1 * 1024 * 1024}
+        // isResumable
+        // onUploadSuccess={(file) => {
+        //   console.log("File uploaded successfully", file);
+        // }}
       />
     </main>
   );
