@@ -10,7 +10,7 @@ const IGSiteStorage: AmplifyStorageNames = AmplifyStorageNames.IGSiteStorage;
 export const siteStorage = defineStorage({
   name: IGSiteStorage,
   access: (allow) => ({
-    "files/*": [allow.guest.to(["read"])],
+    "files/*": [allow.entity("identity").to(["read", "write", "delete"])],
   }),
   isDefault: true,
 });
@@ -21,6 +21,7 @@ export const cvStorage = defineStorage({
   access: (allow) => ({
     "cv/*": [allow.authenticated.to(["read", "write", "delete"])],
   }),
+  isDefault: true,
 });
 
 const IGJobSpecStorage: AmplifyStorageNames =
@@ -30,4 +31,5 @@ export const jobSpecStorage = defineStorage({
   access: (allow) => ({
     "specs/*": [allow.authenticated.to(["read", "write", "delete"])],
   }),
+  isDefault: true,
 });
