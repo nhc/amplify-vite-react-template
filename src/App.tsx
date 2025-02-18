@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+// import { FileUploader } from "@aws-amplify/ui-react-storage";
+// import { IGSiteStorage } from "../amplify/storage/resource";
 
 const client = generateClient<Schema>();
 
@@ -33,6 +35,18 @@ function App() {
           Review next step of this tutorial.
         </a>
       </div>
+      <br />
+      {/* <FileUploader
+        bucket={IGSiteStorage}
+        acceptedFileTypes={["pdf/*", "docx/*", "txt/*"]}
+        path={({ identityId }) => `cv/${identityId}/`}
+        maxFileCount={1}
+        maxFileSize={1 * 1024 * 1024}
+        isResumable
+        onUploadSuccess={async (file) => {
+          console.log("File uploaded successfully", file);
+        }}
+      /> */}
     </main>
   );
 }
