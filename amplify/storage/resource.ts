@@ -15,16 +15,16 @@ export const siteStorage = defineStorage({
 });
 
 //const IGCVStorage: AmplifyStorageNames = AmplifyStorageNames.IGCVStorage;
-export const cvStorage = defineStorage({
-  name: "IGCVStorage",
-  access: (allow) => ({
-    "cv/*": [allow.entity("identity").to(["read", "write", "delete"])],
-  }),
-});
+// export const cvStorage = defineStorage({
+//   name: "IGCVStorage",
+//   access: (allow) => ({
+//     "cv/*": [allow.entity("identity").to(["read", "write", "delete"])],
+//   }),
+// });
 
-export const jobSpecStorage = defineStorage({
-  name: "IGJobSpecStorage",
-  access: (allow) => ({
-    "specs/*": [allow.entity("identity").to(["read", "write", "delete"])],
-  }),
-});
+// export const jobSpecStorage = defineStorage({
+//   name: "IGJobSpecStorage",
+//   access: (allow) => ({
+//     "specs/*": [allow.entity("identity").to(["read", "write", "delete"])],
+//   }),
+// });

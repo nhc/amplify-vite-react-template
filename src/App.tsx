@@ -12,7 +12,9 @@ Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 function App() {
-  const { signOut, authStatus } = useAuthenticator((context) => [context.user]);
+  const { signOut, authStatus, user } = useAuthenticator((context) => [
+    context.user,
+  ]);
 
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
@@ -63,11 +65,23 @@ function App() {
         acceptedFileTypes={["pdf/*", "docx/*", "txt/*"]}
         path={({ identityId }) => `files/${identityId}/`}
         maxFileCount={1}
-        // maxFileSize={1 * 1024 * 1024}
-        // isResumable
-        // onUploadSuccess={(file) => {
-        //   console.log("File uploaded successfully", file);
-        // }}
+        maxFileSize={1 * 1024 * 1024}
+        isResumable
+        onUploadSuccess={async (file) => {
+          console.log("File uploaded successfully", file, user.userId);
+          const created = await client.models.uploadedFiles.create({
+            bucket: "interviewGuyFileStorageCVs",
+            path: file.key,
+            cognitoUserId: user.userId,
+          });
+          if (created?.data) {
+            console.log(
+              "File uploaded successfully and saved to storage",
+              created.data
+            );
+          }
+          // save to storage
+        }}
       />
     </main>
   );
