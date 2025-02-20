@@ -19,12 +19,14 @@ const schema = a.schema({
       cognitoUserId: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
-  extractedFileContents: a.model({
-    cognitoUserId: a.string(),
-    uploadedFilePath: a.string(),
-    lineNo: a.string(),
-    content: a.string(),
-  }),
+  extractedFileContents: a
+    .model({
+      cognitoUserId: a.string(),
+      uploadedFilePath: a.string(),
+      lineNo: a.string(),
+      content: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
