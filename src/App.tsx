@@ -5,7 +5,7 @@ import { generateClient } from "aws-amplify/data";
 import { FileUploader } from "@aws-amplify/ui-react-storage";
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
-import outputs from "../amplify_config.json";
+import outputs from "../amplify_outputs.json";
 
 Amplify.configure(outputs);
 
