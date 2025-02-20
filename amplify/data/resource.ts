@@ -21,7 +21,7 @@ const schema = a.schema({
     .authorization((allow) => [allow.publicApiKey()]),
   extractedFileContents: a.model({
     cognitoUserId: a.string(),
-    uploadedFileId: a.string(),
+    uploadedFilePath: a.string(),
     lineNo: a.string(),
     content: a.string(),
   }),
