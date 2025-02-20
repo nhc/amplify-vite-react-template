@@ -69,7 +69,7 @@ function App() {
         isResumable
         onUploadSuccess={async (file) => {
           console.log("File uploaded successfully", file, user.userId);
-          const created = await client.models.uploadedFiles.create({
+          const created = await client.models.uploadedFile.create({
             bucket: "interviewGuyFileStorageCVs",
             path: file.key,
             cognitoUserId: user.userId,

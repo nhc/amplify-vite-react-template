@@ -11,13 +11,18 @@ const schema = a
     Todo: a.model({
       content: a.string(),
     }),
-    uploadedFiles: a.model({
+    uploadedFile: a.model({
       bucket: a.string(),
       path: a.string(),
       cognitoUserId: a.string(),
+      extractedFileContentId: a.id(),
+      extractedFileContent: a.hasOne(
+        "extractedFileContent",
+        "extractedFileContentId"
+      ),
     }),
-    extractedFileContents: a.model({
-      cognitoUserId: a.string(),
+    extractedFileContent: a.model({
+      customers: a.hasMany("uploadedFile", "extractedFileContentId"),
       uploadedFilePath: a.string(),
       lineNo: a.string(),
       content: a.string(),
