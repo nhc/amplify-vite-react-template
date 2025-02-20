@@ -11,20 +11,17 @@ const schema = a
     Todo: a.model({
       content: a.string(),
     }),
+    extractedFileContent: a.model({
+      uploadedFilePath: a.string(),
+      content: a.json(),
+      uploadedFileId: a.id(),
+      customers: a.belongsTo("uploadedFile", "uploadedFileId"),
+    }),
     uploadedFile: a.model({
       bucket: a.string(),
       path: a.string(),
       cognitoUserId: a.string(),
-      extractedFileContentId: a.id(),
-      extractedFileContent: a.hasOne(
-        "extractedFileContent",
-        "extractedFileContentId"
-      ),
-    }),
-    extractedFileContent: a.model({
-      customers: a.hasOne("uploadedFile", "extractedFileContentId"),
-      uploadedFilePath: a.string(),
-      content: a.json(),
+      extractedFileContent: a.hasOne("extractedFileContent", "uploadedFileId"),
     }),
   })
   .authorization((allow) => [allow.publicApiKey()]);
