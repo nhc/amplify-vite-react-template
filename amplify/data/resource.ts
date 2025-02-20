@@ -22,10 +22,9 @@ const schema = a
       ),
     }),
     extractedFileContent: a.model({
-      customers: a.hasMany("uploadedFile", "extractedFileContentId"),
+      customers: a.hasOne("uploadedFile", "extractedFileContentId"),
       uploadedFilePath: a.string(),
-      lineNo: a.string(),
-      content: a.string(),
+      content: a.json(),
     }),
   })
   .authorization((allow) => [allow.publicApiKey()]);
