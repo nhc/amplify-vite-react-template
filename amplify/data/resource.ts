@@ -6,28 +6,24 @@ adding a new "isDone" field as a boolean. The authorization rule below
 specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
-const schema = a.schema({
-  Todo: a
-    .model({
+const schema = a
+  .schema({
+    Todo: a.model({
       content: a.string(),
-    })
-    .authorization((allow) => [allow.publicApiKey()]),
-  uploadedFiles: a
-    .model({
+    }),
+    uploadedFiles: a.model({
       bucket: a.string(),
       path: a.string(),
       cognitoUserId: a.string(),
-    })
-    .authorization((allow) => [allow.publicApiKey()]),
-  extractedFileContents: a
-    .model({
+    }),
+    extractedFileContents: a.model({
       cognitoUserId: a.string(),
       uploadedFilePath: a.string(),
       lineNo: a.string(),
       content: a.string(),
-    })
-    .authorization((allow) => [allow.publicApiKey()]),
-});
+    }),
+  })
+  .authorization((allow) => [allow.publicApiKey()]);
 
 export type Schema = ClientSchema<typeof schema>;
 
