@@ -1,34 +1,37 @@
 import "@aws-amplify/ui-react/styles.css";
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
-import { FileUploader } from "@aws-amplify/ui-react-storage";
+// import { useEffect, useState } from "react";
+// import type { Schema } from "../amplify/data/resource";
+// import { generateClient } from "aws-amplify/data";
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
+import { Outlet, Route } from "react-router";
+import { Navbar } from "./components/navigation";
+import { Footer } from "./components/footer";
+import { Home } from "./pages/home";
+import { Routes } from "react-router";
+import { CVUpload } from "./pages/cvupload";
+// import { SiteMessage } from "./components/sitemessage";
 
 Amplify.configure(outputs);
 
-const client = generateClient<Schema>();
+// const client = generateClient<Schema>();
 
 function App() {
-  const { signOut, authStatus, user } = useAuthenticator((context) => [
-    context.user,
-  ]);
+  const { authStatus } = useAuthenticator((context) => [context.user]);
 
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  // const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
+  // useEffect(() => {
+  //   client.models.Todo.observeQuery().subscribe({
+  //     next: (data) => setTodos([...data.items]),
+  //   });
+  // }, []);
 
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
-  }
+  // function createTodo() {
+  //   client.models.Todo.create({ content: window.prompt("Todo content") });
+  // }
 
-  if (authStatus === "configuring") return <div>Loading...</div>;
   if (authStatus !== "authenticated")
     return (
       <div className="h-screen flex items-center justify-center">
@@ -37,53 +40,20 @@ function App() {
     );
 
   return (
-    <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
-        ))}
-      </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
-      <br />
-      <button
-        className="cursor-pointer bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 px-4"
-        onClick={signOut}
-      >
-        Sign out
-      </button>
-
-      <FileUploader
-        bucket={"IGSiteStorage"}
-        acceptedFileTypes={["pdf/*", "docx/*", "txt/*"]}
-        path={({ identityId }) => `files/${identityId}/`}
-        maxFileCount={1}
-        maxFileSize={1 * 1024 * 1024}
-        isResumable
-        onUploadSuccess={async (file) => {
-          console.log("File uploaded successfully", file, user.userId);
-          const created = await client.models.uploadedFile.create({
-            bucket: "interviewGuyFileStorageCVs",
-            path: file.key,
-            cognitoUserId: user.userId,
-          });
-          if (created?.data) {
-            console.log(
-              "File uploaded successfully and saved to storage",
-              created.data
-            );
-          }
-          // save to storage
-        }}
-      />
-    </main>
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-75">
+      <Navbar />
+      {/* <SiteMessage /> */}
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/upload-documents" element={<CVUpload />} />
+          {/* <Route path="/cv-job-analysis" element={<Analysis />} />
+            <Route path="/ai-mock-interview" element={<MockInterview />} /> */}
+        </Routes>
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
   );
 }
 

@@ -5,13 +5,16 @@ import "./index.css";
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
 import { Authenticator } from "@aws-amplify/ui-react";
+import { BrowserRouter } from "react-router";
 
 Amplify.configure(outputs);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Authenticator.Provider>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Authenticator.Provider>
   </React.StrictMode>
 );
