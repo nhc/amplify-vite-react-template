@@ -5,7 +5,7 @@ import outputs from "../../amplify_outputs.json";
 // import { InfoIcon } from "../components/icon";
 import { generateClient } from "aws-amplify/api";
 import type { Schema } from "../../amplify/data/resource";
-import { useEffect } from "react";
+//import { useEffect } from "react";
 
 Amplify.configure(outputs);
 
@@ -15,11 +15,11 @@ export const CVUpload = () => {
   const { user } = useAuthenticator((context) => [context.user]);
   //const [cvs, setCVs] = useState<Array<Schema["uploadedFile"]["type"]>>([]);
 
-  useEffect(() => {
-    const { data } = client.models.extractedFileContent.list();
-    console.log("CVs", data);
-    //setCVs(cvs?.items || []);
-  }, []);
+  // useEffect(() => {
+  //   const { data } = client.models.uploadedFile.list();
+  //   console.log("CVs", data);
+  //   //setCVs(cvs?.items || []);
+  // }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
