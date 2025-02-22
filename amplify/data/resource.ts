@@ -15,7 +15,7 @@ const schema = a
       uploadedFilePath: a.string(),
       content: a.json(),
       uploadedFileId: a.id(),
-      customers: a.belongsTo("uploadedFile", "uploadedFileId"),
+      uploadedFile: a.belongsTo("uploadedFile", "uploadedFileId"),
     }),
     uploadedFile: a.model({
       bucket: a.string(),
