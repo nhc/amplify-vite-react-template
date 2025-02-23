@@ -8,9 +8,6 @@ specifies that any user authenticated via an API key can "create", "read",
 =========================================================================*/
 const schema = a
   .schema({
-    Todo: a.model({
-      content: a.string(),
-    }),
     extractedFileContent: a.model({
       uploadedFilePath: a.string(),
       content: a.json(),
@@ -22,6 +19,13 @@ const schema = a
       path: a.string(),
       cognitoUserId: a.string(),
       extractedFileContent: a.hasOne("extractedFileContent", "uploadedFileId"),
+      jobDescription: a.hasMany("jobDescription", "uploadedFileId"),
+    }),
+    jobDescription: a.model({
+      role: a.string(),
+      content: a.string(),
+      uploadedFileId: a.id(),
+      uploadedFile: a.belongsTo("uploadedFile", "uploadedFileId"),
     }),
   })
   .authorization((allow) => [allow.publicApiKey()]);
