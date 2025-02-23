@@ -8,6 +8,7 @@ import { generateClient } from "aws-amplify/api";
 import type { Schema } from "../../amplify/data/resource";
 import { useEffect, useRef, useState } from "react";
 import { parseS3Filename } from "../utils/functions";
+import { format } from "date-fns/format";
 
 Amplify.configure(outputs);
 
@@ -75,7 +76,7 @@ export const CVUpload = () => {
         {/* CV Upload Box */}
         <div className="p-6 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
           <h2 className="text-xl font-semibold mb-4 dark:text-white">
-            Upload CV <span className="text-sm ">(currently PDF only)</span>
+            1. Upload CV <span className="text-sm ">(currently PDF only)</span>
           </h2>
 
           <div className="flex flex-row items-start">
@@ -103,7 +104,10 @@ export const CVUpload = () => {
             )}
             {hasCv && !uploadingCV && (
               <div className="ml-5 dark:text-white">
-                <p>Will we use the CV you previously uploaded</p>
+                <p>
+                  Will we use the CV you previously uploaded on{" "}
+                  {format(cvItem[0].createdAt, "dd MMM yyyy HH:m:s aaa")}{" "}
+                </p>
                 {cvItem?.map((item) => (
                   <div key={item.id}>
                     <div className="flex items-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 my-6">
@@ -200,18 +204,19 @@ export const CVUpload = () => {
         {/* Job Description Upload Box */}
         <div className="p-6 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
           <h2 className="text-xl font-semibold mb-4 dark:text-white">
-            Job Description
+            2. Job Description
           </h2>
           <div className="flex flex-col items-center">
             <input
               type="text"
               ref={jobDescriptionTitleRef}
               placeholder="E.g. Marketing Manager"
+              className="w-full p-3 mb-2 border-1 border-solid border-gray-300 dark:border-gray-600 bg-white"
             />
             <textarea
               ref={jobDescriptionContentRef}
               placeholder="Add required skills, qualifications, and responsibilities etc"
-              className="w-full h-48 p-4 border-2 border-solid border-gray-300 dark:border-gray-600 bg-white"
+              className="w-full h-48 p-4 border-1 border-solid border-gray-300 dark:border-gray-600 bg-white"
             ></textarea>
             <div className="w-full text-right">
               <button
