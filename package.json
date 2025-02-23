@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.5.5",
     "@aws-amplify/ui-react-storage": "^3.8.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.751.0",
     "@tailwindcss/vite": "^4.0.7",
     "aws-amplify": "^6.13.0",
     "date-fns": "^4.1.0",
