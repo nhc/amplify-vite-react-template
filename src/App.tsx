@@ -11,6 +11,7 @@ import { Footer } from "./components/footer";
 import { Home } from "./pages/home";
 import { Routes } from "react-router";
 import { CVUpload } from "./pages/cvupload";
+import { Analysis } from "./pages/analysis";
 // import { SiteMessage } from "./components/sitemessage";
 
 Amplify.configure(outputs);
@@ -47,6 +48,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/upload-documents" element={<CVUpload />} />
+          <Route path="/analysis" element={<Analysis />} />
           {/* <Route path="/cv-job-analysis" element={<Analysis />} />
             <Route path="/ai-mock-interview" element={<MockInterview />} /> */}
         </Routes>
