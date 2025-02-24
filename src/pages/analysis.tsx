@@ -1,13 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Schema } from "../../amplify/data/resource";
 import { useEffect, useState } from "react";
 import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/api";
-import {
-  BedrockAgentRuntimeClient,
-  InvokeAgentCommand,
-} from "@aws-sdk/client-bedrock-agent-runtime";
+//import { BedrockAgentRuntimeClient } from "@aws-sdk/client-bedrock-agent-runtime";
 
 import outputs from "../../amplify_outputs.json";
 import Markdown from "react-markdown";
@@ -16,18 +11,18 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-const bedrockClient = new BedrockAgentRuntimeClient({
-  region: "eu-west-1",
-  credentials: {
-    accessKeyId: import.meta.env.VITE_AWSACCESSKEY,
-    secretAccessKey: import.meta.env.VITE_AWSSECRETKEY,
-  },
-});
+// const bedrockClient = new BedrockAgentRuntimeClient({
+//   region: "eu-west-1",
+//   credentials: {
+//     accessKeyId: import.meta.env.VITE_AWSACCESSKEY,
+//     secretAccessKey: import.meta.env.VITE_AWSSECRETKEY,
+//   },
+// });
 
 export const Analysis = () => {
   const [cvPrompt, setCvPrompt] = useState<string>("");
-  const [jobPrompt, setJobPrompt] = useState<string>("");
-  const [answer, setAnswer] = useState<string | null>(null);
+  const [jobPrompt] = useState<string>("");
+  const [answer] = useState<string | null>(null);
 
   useEffect(() => {
     const jd = async function getConvertedCv() {
@@ -76,42 +71,42 @@ export const Analysis = () => {
     // });
   }, []);
 
-  useEffect(() => {
-    async function invokeAgent(prompt: string) {
-      const session = "123";
-      const command = new InvokeAgentCommand({
-        agentId: "NNXVXHQC3X",
-        agentAliasId: "YZTSEAXCHD",
-        sessionId: session,
-        inputText: prompt,
-      });
-      try {
-        let completion = "";
-        const response = await bedrockClient.send(command);
-        if (response.completion === undefined) {
-          throw new Error("Completion is undefined");
-        }
-        for await (const chunkEvent of response.completion) {
-          const chunk = chunkEvent.chunk;
-          const decodedResponse = new TextDecoder("utf-8").decode(chunk?.bytes);
-          completion += decodedResponse;
-        }
-        return { sessionId: session, completion };
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    if (cvPrompt.length !== 0 || jobPrompt.length !== 0) {
-      //   console.log("CV Prompt", cvPrompt);
-      //   console.log("Job Prompt", jobPrompt);
-      const combinedPrompt = `${cvPrompt} ${jobPrompt}`;
+  //   useEffect(() => {
+  //     async function invokeAgent(prompt: string) {
+  //       const session = "123";
+  //       const command = new InvokeAgentCommand({
+  //         agentId: "NNXVXHQC3X",
+  //         agentAliasId: "YZTSEAXCHD",
+  //         sessionId: session,
+  //         inputText: prompt,
+  //       });
+  //       try {
+  //         let completion = "";
+  //         const response = await bedrockClient.send(command);
+  //         if (response.completion === undefined) {
+  //           throw new Error("Completion is undefined");
+  //         }
+  //         for await (const chunkEvent of response.completion) {
+  //           const chunk = chunkEvent.chunk;
+  //           const decodedResponse = new TextDecoder("utf-8").decode(chunk?.bytes);
+  //           completion += decodedResponse;
+  //         }
+  //         return { sessionId: session, completion };
+  //       } catch (err) {
+  //         console.error(err);
+  //       }
+  //     }
+  //     if (cvPrompt.length !== 0 || jobPrompt.length !== 0) {
+  //       //   console.log("CV Prompt", cvPrompt);
+  //       //   console.log("Job Prompt", jobPrompt);
+  //       const combinedPrompt = `${cvPrompt} ${jobPrompt}`;
 
-      //   invokeAgent(prompt).then((data: any) => {
-      //     setAnswer(data?.completion);
-      //   });
-      console.log("combinedPrompt", combinedPrompt);
-    }
-  }, [cvPrompt, jobPrompt]);
+  //       //   invokeAgent(prompt).then((data: any) => {
+  //       //     setAnswer(data?.completion);
+  //       //   });
+  //       console.log("combinedPrompt", combinedPrompt);
+  //     }
+  //   }, [cvPrompt, jobPrompt]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
