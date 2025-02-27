@@ -1,54 +1,95 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Schema } from "../../amplify/data/resource";
 import { useEffect, useState } from "react";
 import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/api";
-//import { BedrockAgentRuntimeClient } from "@aws-sdk/client-bedrock-agent-runtime";
+import {
+  BedrockAgentRuntimeClient,
+  InvokeAgentCommand,
+} from "@aws-sdk/client-bedrock-agent-runtime";
 
 import outputs from "../../amplify_outputs.json";
-import Markdown from "react-markdown";
+import { extractValues } from "../utils/functions";
+import { v4 as uuidv4 } from "uuid";
+import { AnswerStream } from "../components/answer-stream";
+import { useNavigate } from "react-router";
+import { useTimeout } from "usehooks-ts";
 
 Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-// const bedrockClient = new BedrockAgentRuntimeClient({
-//   region: "eu-west-1",
-//   credentials: {
-//     accessKeyId: import.meta.env.VITE_AWSACCESSKEY,
-//     secretAccessKey: import.meta.env.VITE_AWSSECRETKEY,
-//   },
-// });
+const bedrockClient = new BedrockAgentRuntimeClient({
+  //   region: "eu-west-1",
+  region: "us-east-1",
+  credentials: {
+    accessKeyId: import.meta.env.VITE_AWSACCESSKEY,
+    secretAccessKey: import.meta.env.VITE_AWSSECRETKEY,
+  },
+});
+
+const session = uuidv4();
 
 export const Analysis = () => {
-  const [cvPrompt, setCvPrompt] = useState<string>("");
-  const [jobPrompt] = useState<string>("");
-  const [answer] = useState<string | null>(null);
+  const [disabled] = useState<boolean>(false);
+  const [fieldsetActive, setfieldsetActive] = useState<boolean>(true);
+  const [combinedPrompt, setCombinedPrompt] = useState<string>("");
+  const [answer, setAnswer] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
+  const sessionTimeoutRedirect = () => {
+    // after 5 minutes redirect
+    navigate("/?session=expired");
+  };
+
+  useTimeout(sessionTimeoutRedirect, 300000);
+
+  // 600000
+
+  async function invokeAgent(prompt: string) {
+    const command = new InvokeAgentCommand({
+      agentId: "H2MKY5NCDP",
+      agentAliasId: "0LH3RGYPOC",
+      sessionId: session,
+      inputText: prompt,
+    });
+    try {
+      let completion = "";
+      const response = await bedrockClient.send(command);
+      if (response.completion === undefined) {
+        throw new Error("Completion is undefined");
+      }
+
+      for await (const chunkEvent of response.completion) {
+        const chunk = chunkEvent.chunk;
+        const decodedResponse = new TextDecoder("utf-8").decode(chunk?.bytes);
+        completion += decodedResponse;
+      }
+
+      return completion;
+    } catch (err) {
+      console.error(err);
+    }
+  }
   useEffect(() => {
-    const jd = async function getConvertedCv() {
+    const cv = async function getConvertedCv() {
       return await client.models.extractedFileContent
         .list({ limit: 1 })
         .then((data) => {
-          const content = data.data[0].content;
-          if (typeof content == "string") {
-            setCvPrompt(content);
-          }
-          return data;
+          return JSON.parse(JSON.stringify(data.data[0].content));
         })
         .catch((error) => {
           console.error("getConvertedCv ERROR", error);
         });
     };
-    const cv = async function getJobDescription() {
+    const jd = async function getJobDescription() {
       return await client.models.jobDescription
         .list({ limit: 1 })
         .then((data) => {
-          console.log("DATA"), data;
-          //   const content = data.data[0].content;
-          //   if (typeof content == "string") {
-          //     setJobPrompt(content);
-          //   }
-          return data;
+          console.log("JOB DESCRIPTION", data.data[0].content);
+          const content = data.data[0].content;
+          return content;
         })
         .catch((error) => {
           console.error("getJobDescription ERROR", error);
@@ -61,58 +102,122 @@ export const Analysis = () => {
     //   );
     // });
 
-    Promise.all([cv(), jd()]).then(() => {
-      console.log("Promise.all", cvPrompt, jobPrompt);
-      //setJobPrompt(`This is the job description: ${data.data[0].content}`);
+    Promise.all([cv(), jd()]).then((data: unknown) => {
+      if (Array.isArray(data)) {
+        const cvParsed = extractValues(data[0]);
+
+        setCombinedPrompt(
+          `This is the cv: ${cvParsed} \n\n This is the job description: ${data[1]}`
+        );
+      }
     });
-
-    // getJobDescription().then((data: any) => {
-
-    // });
   }, []);
 
-  //   useEffect(() => {
-  //     async function invokeAgent(prompt: string) {
-  //       const session = "123";
-  //       const command = new InvokeAgentCommand({
-  //         agentId: "NNXVXHQC3X",
-  //         agentAliasId: "YZTSEAXCHD",
-  //         sessionId: session,
-  //         inputText: prompt,
-  //       });
-  //       try {
-  //         let completion = "";
-  //         const response = await bedrockClient.send(command);
-  //         if (response.completion === undefined) {
-  //           throw new Error("Completion is undefined");
-  //         }
-  //         for await (const chunkEvent of response.completion) {
-  //           const chunk = chunkEvent.chunk;
-  //           const decodedResponse = new TextDecoder("utf-8").decode(chunk?.bytes);
-  //           completion += decodedResponse;
-  //         }
-  //         return { sessionId: session, completion };
-  //       } catch (err) {
-  //         console.error(err);
-  //       }
-  //     }
-  //     if (cvPrompt.length !== 0 || jobPrompt.length !== 0) {
-  //       //   console.log("CV Prompt", cvPrompt);
-  //       //   console.log("Job Prompt", jobPrompt);
-  //       const combinedPrompt = `${cvPrompt} ${jobPrompt}`;
+  useEffect(() => {
+    if (combinedPrompt.length !== 0 && !disabled) {
+      setAnswer("Configuring your data, please wait...");
+      // PRIME THE AGENT
+      invokeAgent(combinedPrompt).then(() => {
+        setAnswer("Ready please choose a question");
+      });
+    }
+  }, [combinedPrompt, disabled]);
 
-  //       //   invokeAgent(prompt).then((data: any) => {
-  //       //     setAnswer(data?.completion);
-  //       //   });
-  //       console.log("combinedPrompt", combinedPrompt);
-  //     }
-  //   }, [cvPrompt, jobPrompt]);
-
+  const sendQuestion = (question: string, prompt: string) => {
+    if (disabled) return;
+    setfieldsetActive(false);
+    setAnswer(`${question} \n\n`);
+    invokeAgent(prompt).then((data: unknown) => {
+      setAnswer(data as string);
+      setfieldsetActive(true);
+    });
+  };
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h2 className="text-white">Ai Analysis Page</h2>
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 analysis-page">
+      <h1 className="text-3xl font-bold text-center mb-12 dark:text-white ">
+        Analysis
+      </h1>
       <div className="text-center text-black dark:text-white text-left">
-        <Markdown>{answer}</Markdown>
+        <form>
+          <fieldset disabled={fieldsetActive}>
+            <h2 className="text-black dark:text-white">
+              CV Specific Questions
+            </h2>
+            <div className="flex space-x-4 mt-2">
+              <a
+                href="#"
+                onClick={() => {
+                  sendQuestion(
+                    "Am I a good fit for the role?",
+                    "Is the CV a good fit for the job description? Give specific examples of where they are matched. Do not regurgitate the CV or Job Description. Keep it high level and to the point. At the end of your response give a score which is out of 10. 10 being the best fit."
+                  );
+                }}
+                className="flex bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
+              >
+                Am I a good fit for the role?
+              </a>
+
+              <a
+                href="#"
+                onClick={() => {
+                  sendQuestion(
+                    "What are my strengths?",
+                    "What are the candidates strengths, compare the CV to the Job Description. Do not give any weaknesses."
+                  );
+                }}
+                className="flex bg-blue-600 text-white px-3 py-1  rounded-lg hover:bg-blue-700"
+              >
+                What are my strengths?
+              </a>
+
+              <a
+                href="#"
+                onClick={() => {
+                  sendQuestion(
+                    "Which skills are missing from my CV?",
+                    "Look at the CV and Job Description, list out the missing skills? Provide a list of minimum 5 skills that are missing from the CV that are in the Job Description. Provide numbered bullets points keep it simple."
+                  );
+                }}
+                className="flex bg-blue-600 text-white px-3 py-1  rounded-lg hover:bg-blue-700"
+              >
+                Which skills are missing from my CV?
+              </a>
+            </div>
+            <h2 className="text-black dark:text-white mt-6">
+              Possible Interview Questions
+            </h2>
+            <div className="flex space-x-4 mt-2">
+              <a
+                href="#"
+                onClick={() => {
+                  sendQuestion(
+                    "Give me 5 industry specific interview questions",
+                    "Based on the information provided, generate a list of 5 industry specific interview questions. Extract the industry from the job description already provided. The questions must be high level and suitable for a first round interview. Do not ask for too many implementation details. Make each question about a different subject. Most of the questions should be about the candidate's experience and how they would handle certain situations. "
+                  );
+                }}
+                className="flex bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
+              >
+                Generating 5 industry specific interview questions
+              </a>
+
+              <a
+                href="#"
+                onClick={() => {
+                  sendQuestion(
+                    "Genrating 5 role specific interview questions",
+                    "Based on the information provided, generate a list of 5 role specific interview questions. Extract the role from the job description previously provided. The questions must be high level and suitable for a first round interview.  Do not ask for too many implementation details. Make each question about a different subject. Most of the questions should be about the candidate's experience and how they would handle certain situations. In the response do not provide a summary or title, just return the 5 questions."
+                  );
+                }}
+                className="flex bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
+              >
+                Give me 5 role specific interview questions
+              </a>
+            </div>
+          </fieldset>
+        </form>
+        <div>
+          <AnswerStream answerStream={answer || ""} />
+        </div>
       </div>
     </div>
   );

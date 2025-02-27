@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavItem } from "./navigation-item";
+import { NavLink } from "react-router";
 
 export function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -21,11 +22,11 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="">
-            <a href="/" className="flex-shrink-0 flex items-center">
+            <NavLink to="/" className="flex-shrink-0 flex items-center">
               <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">
                 Interview Guy
               </span>
-            </a>
+            </NavLink>
           </div>
           <div className="flex-grow text-center ">
             <div className="space-x-4">
@@ -34,13 +35,7 @@ export function Navbar() {
                 text="Upload / Paste Documents"
               />
               <NavItem href="/analysis" text="Analysis" />
-
-              <a
-                href="/mock-interview"
-                className="text-gray-900 dark:text-white hover:text-blue-600 px-3 py-2"
-              >
-                Mock Interview
-              </a>
+              <NavItem href="/mock-interview" text="Mock Interview" />
             </div>
           </div>
           <div className="">

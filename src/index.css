@@ -44,10 +44,45 @@ h5 {
   font-style: normal;
 }
 
+h2 {
+  font-size: 1.3rem;
+}
+
 main {
 }
 
 button {
   cursor: pointer;
   transition: border-color 0.25s;
+}
+
+.answer-text p,
+ol {
+  padding: 10px 0;
+}
+
+.answer-text ol {
+  list-style-type: decimal;
+}
+.answer-text ul {
+  list-style-type: square;
+  padding: 10px 0;
+}
+
+.answer-text li {
+  padding: 0 0 0 20px;
+}
+
+.analysis-page button {
+  padding: 2px 10px;
+  border-radius: 1px;
+}
+
+.answer-stream p,
+.answer-stream li {
+  padding: 10px 0;
+}
+
+.answer-stream ol {
+  list-style-type: decimal;
 }
