@@ -45,8 +45,6 @@ export const Analysis = () => {
 
   useTimeout(sessionTimeoutRedirect, 300000);
 
-  // 600000
-
   async function invokeAgent(prompt: string) {
     const command = new InvokeAgentCommand({
       agentId: "H2MKY5NCDP",
@@ -192,7 +190,7 @@ export const Analysis = () => {
                 onClick={() => {
                   sendQuestion(
                     "Give me 5 industry specific interview questions",
-                    "Based on the information provided, generate a list of 5 industry specific interview questions. Extract the industry from the job description already provided. The questions must be high level and suitable for a first round interview. Do not ask for too many implementation details. Make each question about a different subject. Most of the questions should be about the candidate's experience and how they would handle certain situations. "
+                    "Based on the information provided, generate a list of 5 industry specific interview questions. Extract the industry from the job description already provided. The questions must be high level and suitable for a first round interview. Do not ask for too many implementation details. Make each question about a different subject. Most of the questions should be about the candidate's experience and how they would handle certain situations. Please generate only the bulleted output. DO NOT provide any preamble."
                   );
                 }}
                 className="flex bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
@@ -205,7 +203,7 @@ export const Analysis = () => {
                 onClick={() => {
                   sendQuestion(
                     "Genrating 5 role specific interview questions",
-                    "Based on the information provided, generate a list of 5 role specific interview questions. Extract the role from the job description previously provided. The questions must be high level and suitable for a first round interview.  Do not ask for too many implementation details. Make each question about a different subject. Most of the questions should be about the candidate's experience and how they would handle certain situations. In the response do not provide a summary or title, just return the 5 questions."
+                    "Based on the information provided, generate a list of 5 role specific interview questions. Extract the role from the job description previously provided. The questions must be high level and suitable for a first round interview.  Do not ask for too many implementation details. Make each question about a different subject. Most of the questions should be about the candidate's experience and how they would handle certain situations. In the response do not provide a summary or title, just return the 5 questions. Please generate only the bulleted output. DO NOT provide any preamble."
                   );
                 }}
                 className="flex bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
