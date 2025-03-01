@@ -1,24 +1,18 @@
-export const questionJsonFormat = {
-  Items: [
-    {
-      Category: "String",
-      Question: "String",
-    },
-  ],
-};
+// system: [
+//     {
+//       text: `You write JSON objects based on the given instructions, Please generate only the JSON output. DO NOT provide any preamble. Return valid JSON in the following format: ${JSON.stringify(
+//         questionJsonFormat
+//       )}.`,
+//     },
+//   ],
 
 export const questionBodyFormat = {
-  system: [
-    {
-      text: `You write JSON objects based on the given instructions, Please generate only the JSON output. DO NOT provide any preamble. Return valid JSON in the following format: ${questionJsonFormat}.`,
-    },
-  ],
   messages: [
     {
       role: "user",
       content: [
         {
-          text: "Map the questions provided into JSON with the following keys: 1. category and 2. question. Infer a category from the question which is: [[PROMPT]]",
+          text: `You write JSON objects based on the given instructions, Please generate only the JSON output. DO NOT provide any preamble. Return valid JSON in the following format: {"Items": [{"Category": "String", "Question": "String"}]} Map the questions provided into JSON with the following keys: 1. category and 2. question. Infer a category from the questions. The questions to be converted are: [[PROMPT]] `,
         },
       ],
     },
@@ -27,7 +21,7 @@ export const questionBodyFormat = {
     maxTokens: 300,
     // topP: 0.9,
     // topK: 20,
-    temperature: 0.3,
+    temperature: 0,
   },
 };
 
@@ -46,3 +40,13 @@ export const testBody = {
     },
   ],
 };
+
+interface IInterviewQuestion {
+  Category: string;
+  Question: string;
+}
+
+export interface IQuestionCollection {
+  id?: string;
+  Items?: IInterviewQuestion[];
+}

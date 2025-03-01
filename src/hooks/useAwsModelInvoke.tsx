@@ -21,21 +21,22 @@ export const useAWSModelInvoke = ({
   bedrockClient,
   requestBody,
 }: Props): UseModelInvokeReturn => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   const invokeModel = useCallback(
     async (prompt: string): Promise<string | undefined> => {
+      console.log("prompt", prompt);
       setIsLoading(true);
       setError(null);
 
-      const newBody = requestBody.replace("[[PROMPT]]", JSON.stringify(prompt));
-      console.log("newBody", newBody);
+      const bodyWithPrompt = requestBody.replace("[[PROMPT]]", prompt);
+      //console.log("newBody", newBody);
       const command = new InvokeModelCommand({
         modelId,
         contentType: "application/json",
         accept: "application/json",
-        body: requestBody,
+        body: bodyWithPrompt,
       });
 
       try {
@@ -49,6 +50,7 @@ export const useAWSModelInvoke = ({
 
         return modelResponse.output.message.content[0].text;
       } catch (err) {
+        console.log(err);
         const error =
           err instanceof Error ? err : new Error("An unknown error occurred");
         setError(error);

@@ -27,6 +27,9 @@ const schema = a
       uploadedFileId: a.id(),
       uploadedFile: a.belongsTo("uploadedFile", "uploadedFileId"),
     }),
+    mockInterviewQuestionsFromAnalysis: a.model({
+      items: a.string(), // json format of questions
+    }),
   })
   .authorization((allow) => [allow.publicApiKey()]);
 
