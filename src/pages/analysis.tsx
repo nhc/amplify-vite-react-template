@@ -48,7 +48,7 @@ export const Analysis = () => {
   async function invokeAgent(prompt: string) {
     const command = new InvokeAgentCommand({
       agentId: "H2MKY5NCDP",
-      agentAliasId: "0LH3RGYPOC",
+      agentAliasId: "QBZ73KTRNP",
       sessionId: session,
       inputText: prompt,
     });

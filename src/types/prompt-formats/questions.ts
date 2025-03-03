@@ -41,9 +41,10 @@ export const testBody = {
   ],
 };
 
-interface IInterviewQuestion {
+export interface IInterviewQuestion {
   Category: string;
   Question: string;
+  Active?: boolean;
 }
 
 export interface IQuestionCollection {

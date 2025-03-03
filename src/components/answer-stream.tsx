@@ -41,7 +41,9 @@ export const AnswerStream = ({ answerStream }: Props) => {
   async function saveQuestions(data: IQuestionCollection) {
     console.log("Saving questions to DB", data);
     const { errors, data: newQuestions } =
-      await client.models.mockInterviewQuestionsFromAnalysis.create(data);
+      await client.models.mockInterviewQuestionsFromAnalysis.create({
+        items: JSON.stringify(data),
+      });
     if (!errors) {
       console.log("Questions saved", newQuestions);
     }

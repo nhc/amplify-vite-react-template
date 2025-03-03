@@ -1,4 +1,26 @@
+import { Amplify } from "aws-amplify";
+import { IInterviewQuestion } from "../types/prompt-formats/questions";
+import outputs from "../../amplify_outputs.json";
+import { generateClient } from "aws-amplify/api";
+import { Schema } from "../../amplify/data/resource";
+import { useEffect, useState } from "react";
+import { Question } from "../components/mock-interview/question";
+
+Amplify.configure(outputs);
+
+const client = generateClient<Schema>();
+
 export const MockInterview = () => {
+  const [questionsList, setQuestionsList] = useState<
+    IInterviewQuestion[] | undefined
+  >(undefined);
+  const [activeQ, setActiveQ] = useState<IInterviewQuestion | undefined>(
+    undefined
+  );
+  const [activeNonQ, setNonActiveQ] = useState<
+    IInterviewQuestion[] | undefined
+  >(undefined);
+
   function toggleRecording() {
     const recordingStatus = document.getElementById("recordingStatus");
     const recordingIndicator = document.getElementById("recordingIndicator");
@@ -16,6 +38,32 @@ export const MockInterview = () => {
     }
   }
 
+  useEffect(() => {
+    async function questionsList() {
+      return client.models.mockInterviewQuestionsFromAnalysis.list({
+        limit: 1,
+      });
+    }
+    questionsList().then((data) => {
+      const content = JSON.parse(data?.data[0].items as unknown as string);
+      const json = JSON.parse(content);
+      const items = json?.Items;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const addActiveProperty = items?.map((q: any, i: number) => ({
+        ...q,
+        Active: i === 0 ? true : false,
+      }));
+      console.log("addActiveProperty", addActiveProperty);
+      setQuestionsList(addActiveProperty);
+    });
+  }, []);
+
+  useEffect(() => {
+    setActiveQ(questionsList?.find((item) => item.Active));
+    setNonActiveQ(questionsList?.filter((item) => !item.Active));
+  }, [questionsList]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid md:grid-cols-2 gap-8">
@@ -26,43 +74,17 @@ export const MockInterview = () => {
 
           <div className="mb-6">
             <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Current Question:
+              Current Question: (1/5)
             </h4>
             <p className="text-gray-700 dark:text-gray-300 text-lg p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
-              Tell me about a challenging project you've worked on and how you
-              overcame obstacles.
+              {activeQ?.Question}
             </p>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center text-gray-500 dark:text-gray-400">
-              <svg
-                className="h-5 w-5 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span>What are your greatest strengths?</span>
-            </div>
-            <div className="flex items-center text-gray-500 dark:text-gray-400">
-              <svg
-                className="h-5 w-5 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span>Where do you see yourself in 5 years?</span>
-            </div>
+          <div className="flex flex-col space-y-4">
+            {activeNonQ?.map((item, c) => (
+              <Question key={c} q={item?.Question} />
+            ))}
           </div>
         </div>
 
