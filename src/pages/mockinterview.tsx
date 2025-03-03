@@ -5,6 +5,8 @@ import { generateClient } from "aws-amplify/api";
 import { Schema } from "../../amplify/data/resource";
 import { useEffect, useState } from "react";
 import { Question } from "../components/mock-interview/question";
+import RealtimeTranscriptionComponent from "../components/mock-interview/audio-streamer";
+// import { Predictions } from "@aws-amplify/predictions";
 
 Amplify.configure(outputs);
 
@@ -38,6 +40,14 @@ export const MockInterview = () => {
     }
   }
 
+  // const { transcription } = await Predictions.convert({
+  //   transcription: {
+  //     source: {
+  //       bytes,
+  //     },
+  //   },
+  // });
+
   useEffect(() => {
     async function questionsList() {
       return client.models.mockInterviewQuestionsFromAnalysis.list({
@@ -66,6 +76,7 @@ export const MockInterview = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <RealtimeTranscriptionComponent />
       <div className="grid md:grid-cols-2 gap-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
