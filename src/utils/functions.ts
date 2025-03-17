@@ -36,3 +36,19 @@ export const extractValues = (jsonString: string) => {
   // Join with newlines
   return values.join("\n");
 };
+
+export async function convertToPCM(audioBlob: Blob) {
+  const audioContext = new AudioContext();
+  const arrayBuffer = await audioBlob.arrayBuffer();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+  // Extract PCM data
+  const pcmData = audioBuffer.getChannelData(0); // Get data from the first channel
+  const pcm16Bit = new Int16Array(pcmData.length);
+
+  for (let i = 0; i < pcmData.length; i++) {
+    pcm16Bit[i] = Math.max(-1, Math.min(1, pcmData[i])) * 0x7fff; // Convert to 16-bit PCM
+  }
+
+  return pcm16Bit;
+}

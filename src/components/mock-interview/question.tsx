@@ -1,7 +1,7 @@
 export const Question = ({ q }: { q: string }) => {
   return (
-    <div className="flex items-center text-gray-500 dark:text-gray-400">
-      <div className="w-20">
+    <div className="flex items-center justify-between">
+      {/* <div className="w-20">
         <svg className="h-10 w-10 mr-2" fill="currentColor" viewBox="0 0 20 20">
           <path
             fillRule="evenodd"
@@ -9,7 +9,7 @@ export const Question = ({ q }: { q: string }) => {
             clipRule="evenodd"
           />
         </svg>
-      </div>
+      </div> */}
       <div>{q}</div>
     </div>
   );

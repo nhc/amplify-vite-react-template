@@ -63,7 +63,7 @@ backend.addOutput({
         // },
         transcription: {
           defaults: {
-            language: "en-US",
+            language: "en-GB",
           },
           proxy: false,
           region: backend.auth.stack.region,

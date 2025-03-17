@@ -75,6 +75,7 @@ export const Analysis = () => {
       return await client.models.extractedFileContent
         .list({ limit: 1 })
         .then((data) => {
+          console.log("CV", data.data[0].content);
           return JSON.parse(JSON.stringify(data.data[0].content));
         })
         .catch((error) => {
@@ -146,7 +147,7 @@ export const Analysis = () => {
                 href="#"
                 onClick={() => {
                   sendQuestion(
-                    "Am I a good fit for the role?",
+                    " Am I a good fit for the role?",
                     "Is the CV a good fit for the job description? Give specific examples of where they are matched. Do not regurgitate the CV or Job Description. Keep it high level and to the point. At the end of your response give a score which is out of 10. 10 being the best fit."
                   );
                 }}
@@ -159,7 +160,7 @@ export const Analysis = () => {
                 href="#"
                 onClick={() => {
                   sendQuestion(
-                    "What are my strengths?",
+                    " What are my strengths?",
                     "What are the candidates strengths, compare the CV to the Job Description. Do not give any weaknesses."
                   );
                 }}
@@ -172,7 +173,7 @@ export const Analysis = () => {
                 href="#"
                 onClick={() => {
                   sendQuestion(
-                    "Which skills are missing from my CV?",
+                    " Which skills are missing from my CV?",
                     "Look at the CV and Job Description, list out the missing skills? Provide a list of minimum 5 skills that are missing from the CV that are in the Job Description. Provide numbered bullets points keep it simple."
                   );
                 }}
@@ -189,26 +190,39 @@ export const Analysis = () => {
                 href="#"
                 onClick={() => {
                   sendQuestion(
-                    "Give me 5 industry specific interview questions",
+                    " Give me 5 industry specific interview questions",
                     "Based on the information provided, generate a list of 5 industry specific interview questions. Extract the industry from the job description already provided. The questions must be high level and suitable for a first round interview. Do not ask for too many implementation details. Make each question about a different subject. Most of the questions should be about the candidate's experience and how they would handle certain situations. Please generate only the bulleted output. DO NOT provide any preamble."
                   );
                 }}
                 className="flex bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
               >
-                Generating 5 industry specific interview questions
+                Industry specific interview questions
               </a>
 
               <a
                 href="#"
                 onClick={() => {
                   sendQuestion(
-                    "Genrating 5 role specific interview questions",
+                    " Genrating 5 role specific interview questions",
                     "Based on the information provided, generate a list of 5 role specific interview questions. Extract the role from the job description previously provided. The questions must be high level and suitable for a first round interview.  Do not ask for too many implementation details. Make each question about a different subject. Most of the questions should be about the candidate's experience and how they would handle certain situations. In the response do not provide a summary or title, just return the 5 questions. Please generate only the bulleted output. DO NOT provide any preamble."
                   );
                 }}
                 className="flex bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
               >
-                Give me 5 role specific interview questions
+                Role specific interview questions
+              </a>
+
+              <a
+                href="#"
+                onClick={() => {
+                  sendQuestion(
+                    "Give me 5 general interview questions based on the interpreted experience level. ",
+                    "Based on the information provided, generate me 5 general interview questions based on the interpreted experience level. Do not make these role specific or industry specific. The questions must be high level and suitable for a first round interview. Do not ask for too many implementation details. Make each question about a different subject. Please generate only the bulleted output. DO NOT provide any preamble."
+                  );
+                }}
+                className="flex bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
+              >
+                General interview questions
               </a>
             </div>
           </fieldset>

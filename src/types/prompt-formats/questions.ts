@@ -34,7 +34,7 @@ export const testBody = {
       role: "user",
       content: [
         {
-          text: "this is where you place your input text",
+          text: "Please give me 5 ideas of positive things to do in the morning.",
         },
       ],
     },

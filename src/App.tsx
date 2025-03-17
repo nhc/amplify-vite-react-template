@@ -13,7 +13,8 @@ import { Routes } from "react-router";
 import { CVUpload } from "./pages/cvupload";
 import { Analysis } from "./pages/analysis";
 import { MockInterview } from "./pages/mockinterview";
-import { TestPage } from "./pages/test";
+import { TestPage } from "./pages/test/test";
+// import { TestPage } from "./pages/test";
 // import { SiteMessage } from "./components/sitemessage";
 
 Amplify.configure(outputs);
