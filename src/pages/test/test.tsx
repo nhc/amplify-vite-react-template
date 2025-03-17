@@ -6,10 +6,13 @@ import {
   interviewQuestion,
 } from "../../types/prompt-formats/mock-interview";
 import { useGetCvJob } from "../../hooks/useGetCvJob";
-import { BedrockRuntimeClient } from "@aws-sdk/client-bedrock-runtime";
 import { useEffect, useState } from "react";
-import { useInvokeLLM } from "../../hooks/useInvokeLLM";
 import { testBody } from "../../types/prompt-formats/mock-interview";
+import { extractValues } from "../../utils/functions";
+import { useAgentInvoke } from "../../hooks/useAgentInvoke";
+import { v4 as uuidv4 } from "uuid";
+import { BedrockAgentRuntimeClient } from "@aws-sdk/client-bedrock-agent-runtime";
+import Markdown from "react-markdown";
 
 interface Replacements {
   [key: string]: string;
@@ -21,8 +24,16 @@ export const TestPage = () => {
   const [prompt, setPrompt] =
     useState<IInterviewQuestionPrompt>(interviewQuestion);
   const { cvContent, jobDescription } = useGetCvJob();
+  const [question, setQuestion] = useState<string>(
+    "Can you share an example of a legacy code refactoring project you have worked on and the impact it had on maintenance overhead?"
+  );
+  const [candidateAnswer, setCandidateAnswer] = useState<string>(
+    "When I worked in for Extreme in 2019 I was brought in to manage an existing ecommerce project to do exactly that. There was all sorts of languages and frameworks being used and it was a mess. I was able to refactor the codebase to use a single language and framework which made it easier to maintain and onboard new developers. This reduced the time it took to onboard new developers by 50% and reduced the number of bugs by 30%."
+  );
+  const [modelAnswer, setModelAnswer] = useState<string>("");
+  const [analysis, setAnalysis] = useState<string>("");
 
-  const bedrockClient = new BedrockRuntimeClient({
+  const bedrockClient = new BedrockAgentRuntimeClient({
     region: "us-east-1",
     credentials: {
       accessKeyId: import.meta.env.VITE_AWSACCESSKEY,
@@ -30,59 +41,60 @@ export const TestPage = () => {
     },
   });
 
-  const { invokeModel } = useInvokeLLM({
-    modelId: "amazon.nova-pro-v1:0",
-    bedrockClient: bedrockClient,
+  const { invokeAgent: invokeStep1 } = useAgentInvoke({
+    agentId: "J19DVUUHWZ",
+    agentAliasId: "KQGEWPHQX1",
+    sessionId: uuidv4(),
+    bedrockClient,
+  });
+
+  const { invokeAgent: invokeStep2 } = useAgentInvoke({
+    agentId: "X3NLVYV0HD",
+    agentAliasId: "YVQEXLO6XE",
+    sessionId: uuidv4(),
+    bedrockClient,
   });
   // console.log("Hello", result);
 
   useEffect(() => {
-    const get = async () => {
-      if (replacements && replacements["[[CV-JOB-DESCRIPTION]]"]) {
-        const parsedPrompt = Object.entries(replacements).reduce(
-          (text, [placeholder, value]) => text.replace(placeholder, value),
-          JSON.stringify(prompt)
-        );
-
-        const jsonPrompt = JSON.parse(parsedPrompt);
-
-        console.log("parsedPrompt", JSON.parse(parsedPrompt));
-        console.log("testBody", testBody);
-        console.log("prompt", prompt);
-
-        const result = await invokeModel(JSON.stringify(jsonPrompt));
-        if (result) {
-          console.log("Result: ", result);
-          // add to DB
-        }
-      }
-    };
-    get();
-  }, [replacements]);
-
-  useEffect(() => {
     if (cvContent && jobDescription) {
-      setCvStr(`${cvContent} ${jobDescription}`);
+      const parsed = extractValues(cvContent);
+      setCvStr(
+        `This is the candidates CV: ${parsed} \n\n This is the job the candidate is going for ${jobDescription}`
+      );
     }
   }, [cvContent, jobDescription]);
 
   useEffect(() => {
-    console.log("setting replacements");
-    setReplacements({
-      "[[JOB-ROLE]]": "Software Engineer",
-      "[[CV-JOB-DESCRIPTION]]": "TEST",
-      "[[QUESTION]]":
-        "Can you describe a challenging project you worked on and how you approached solving the problem?",
-      "[CANDIDATE-ANSWER]":
-        "I was moved to a different team and had to learn a new language and framework. I was able to learn the new language and framework and deliver the project on time, but there were many challenges along the way.",
+    const get = async () => {
+      const result = await invokeStep1(
+        `${cvStr}. This is the interview question ${question}`
+      );
+      if (result) {
+        return result;
+        // add to DB
+      }
+    };
+    get().then(async (modelAnswer) => {
+      console.log("Model Answer: ", modelAnswer);
+      const result = await invokeStep2(
+        `${cvStr}. This is the interview question ${question}, and this is the model answer ${modelAnswer}. The candidate's answer is: ${candidateAnswer}`
+      );
+      if (result) {
+        console.log("Bullets: ", result);
+        setAnalysis(result);
+        // add to DB
+      }
     });
   }, [cvStr]);
+
   return (
     <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h2 className="text-white dark:text-white">Hello, Test Page</h2>
       <div className="text-white dark:text-white">
-        {/* {JSON.parse(prompt)} */}
-        {/* {JSON.stringify(replacements)} */}
+        <h3>Output</h3>
+        {/* <Markdown>{modelAnswer}</Markdown> */}
+        <Markdown>{analysis}</Markdown>
       </div>
     </div>
   );
