@@ -7,7 +7,6 @@ import {
 } from "../../types/prompt-formats/mock-interview";
 import { useGetCvJob } from "../../hooks/useGetCvJob";
 import { useEffect, useState } from "react";
-import { testBody } from "../../types/prompt-formats/mock-interview";
 import { extractValues } from "../../utils/functions";
 import { useAgentInvoke } from "../../hooks/useAgentInvoke";
 import { v4 as uuidv4 } from "uuid";

@@ -7,6 +7,7 @@ import outputs from "../../../amplify_outputs.json";
 import { generateClient } from "aws-amplify/api";
 import { Schema } from "../../../amplify/data/resource";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigationList";
+import { useUI } from "../../context/hooks/useUIHook";
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export const InterviewQuestionsBlock = ({ onDataSend }: Props) => {
+  const { dispatch } = useUI();
   const [questionsList, setQuestionsList] = useState<IInterviewQuestion[]>(
     [] as IInterviewQuestion[]
   );
@@ -34,12 +36,16 @@ export const InterviewQuestionsBlock = ({ onDataSend }: Props) => {
   // Handler for clicking on a question
   const handleQuestionClick = (index: number) => {
     setActiveIndex(index);
+    dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+    dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
   };
 
   // Handler for moving up
   const handleMoveUp = () => {
     if (activeIndex > 0) {
       setActiveIndex(activeIndex - 1);
+      dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+      dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
     }
   };
 
@@ -47,6 +53,8 @@ export const InterviewQuestionsBlock = ({ onDataSend }: Props) => {
   const handleMoveDown = () => {
     if (activeIndex < questionsList.length - 1) {
       setActiveIndex(activeIndex + 1);
+      dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+      dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
     }
   };
 
@@ -123,7 +131,10 @@ export const InterviewQuestionsBlock = ({ onDataSend }: Props) => {
                 ? "text-gray-700 dark:text-gray-300 text-lg p-4 bg-blue-50 dark:bg-blue-900"
                 : " text-gray-500 dark:text-gray-400"
             }`}
-            onClick={() => handleQuestionClick(index)}
+            onClick={() => {
+              handleQuestionClick(index);
+              dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+            }}
           >
             <Question key={index} q={item?.Question} />
           </div>

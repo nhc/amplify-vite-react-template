@@ -86,3 +86,16 @@ ol {
 .answer-stream ol {
   list-style-type: decimal;
 }
+
+.ai-markdown p {
+  padding: 10px 0;
+}
+
+.ai-markdown ul {
+  list-style-type: square;
+  padding: 20px;
+}
+
+.ai-markdown li {
+  padding: 0 0 0 20px;
+}
