@@ -8,12 +8,13 @@ import { generateClient } from "aws-amplify/api";
 import { Schema } from "../../../amplify/data/resource";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigationList";
 import { useUI } from "../../context/hooks/useUIHook";
+import { Drawer } from "./common/question-drawer";
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 export const InterviewQuestionsBlock = () => {
-  const { dispatch } = useUI();
+  const { state, dispatch } = useUI();
   const [questionsList, setQuestionsList] = useState<IInterviewQuestion[]>(
     [] as IInterviewQuestion[]
   );
@@ -30,11 +31,11 @@ export const InterviewQuestionsBlock = () => {
   useKeyboardNavigation(activeIndex, questionsList?.length - 1, setActiveIndex);
 
   // Handler for clicking on a question
-  // const handleQuestionClick = (index: number) => {
-  //   setActiveIndex(index);
-  //   dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
-  //   dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
-  // };
+  const handleQuestionClick = (index: number) => {
+    setActiveIndex(index);
+    // dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+    // dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
+  };
 
   // Handler for moving up
   const handleMoveUp = () => {
@@ -94,9 +95,12 @@ export const InterviewQuestionsBlock = () => {
 
   return (
     <div>
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-        Interview Questions
-      </h3>
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          Interview Questions
+        </h3>
+        <Drawer />
+      </div>
 
       <div className="mb-6">
         <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -134,7 +138,7 @@ export const InterviewQuestionsBlock = () => {
                 : " text-gray-500 dark:text-gray-400"
             }`}
             onClick={() => {
-              //handleQuestionClick(index);
+              handleQuestionClick(index);
               dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
               dispatch({
                 type: "SET_ACTIVE_QUESTION",
