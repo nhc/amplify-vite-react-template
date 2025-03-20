@@ -12,11 +12,7 @@ import { useUI } from "../../context/hooks/useUIHook";
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
-type Props = {
-  onDataSend: (data: string) => void;
-};
-
-export const InterviewQuestionsBlock = ({ onDataSend }: Props) => {
+export const InterviewQuestionsBlock = () => {
   const { dispatch } = useUI();
   const [questionsList, setQuestionsList] = useState<IInterviewQuestion[]>(
     [] as IInterviewQuestion[]
@@ -34,18 +30,18 @@ export const InterviewQuestionsBlock = ({ onDataSend }: Props) => {
   useKeyboardNavigation(activeIndex, questionsList?.length - 1, setActiveIndex);
 
   // Handler for clicking on a question
-  const handleQuestionClick = (index: number) => {
-    setActiveIndex(index);
-    dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
-    dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
-  };
+  // const handleQuestionClick = (index: number) => {
+  //   setActiveIndex(index);
+  //   dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+  //   dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
+  // };
 
   // Handler for moving up
   const handleMoveUp = () => {
     if (activeIndex > 0) {
       setActiveIndex(activeIndex - 1);
-      dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
-      dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
+      // dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+      // dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
     }
   };
 
@@ -53,16 +49,22 @@ export const InterviewQuestionsBlock = ({ onDataSend }: Props) => {
   const handleMoveDown = () => {
     if (activeIndex < questionsList.length - 1) {
       setActiveIndex(activeIndex + 1);
-      dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
-      dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
+      // dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+      // dispatch({ type: "SET_LOADING", payload: { isLoading: false } });
     }
   };
 
   useEffect(() => {
     if (questionsList.length > 0) {
-      onDataSend(questionsList[activeIndex].Question);
+      //onDataSend(questionsList[activeIndex].Question);
+      dispatch({
+        type: "SET_ACTIVE_QUESTION",
+        payload: {
+          data: { activeQuestionText: questionsList[activeIndex].Question },
+        },
+      });
     }
-  }, [activeIndex, onDataSend, questionsList]);
+  }, [activeIndex, dispatch, questionsList]);
 
   useEffect(() => {
     async function questionsList() {
@@ -132,8 +134,12 @@ export const InterviewQuestionsBlock = ({ onDataSend }: Props) => {
                 : " text-gray-500 dark:text-gray-400"
             }`}
             onClick={() => {
-              handleQuestionClick(index);
+              //handleQuestionClick(index);
               dispatch({ type: "SET_ANSWER", payload: { isActive: false } });
+              dispatch({
+                type: "SET_ACTIVE_QUESTION",
+                payload: { data: { activeQuestionText: item?.Question } },
+              });
             }}
           >
             <Question key={index} q={item?.Question} />

@@ -1,13 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect, useCallback, useRef } from "react";
-import {
-  TranscribeStreamingClient,
-  StartStreamTranscriptionCommand,
-} from "@aws-sdk/client-transcribe-streaming";
-import pEvent from "p-event";
-import { useSentenceProcessor } from "../../hooks/useScentenceProcessor";
-import { RecordingProperties, MessageDataType } from "../../types/audio";
-import { pcmEncode } from "../../utils/pcm-encode";
+import { useState, useEffect, useCallback } from "react";
 import { BedrockAgentRuntimeClient } from "@aws-sdk/client-bedrock-agent-runtime";
 import { useAgentInvoke } from "../../hooks/useAgentInvoke";
 import { v4 as uuidv4 } from "uuid";
@@ -15,7 +8,8 @@ import { useGetCvJob } from "../../hooks/useGetCvJob";
 import { extractValues } from "../../utils/functions";
 import Markdown from "react-markdown";
 import { useUI } from "../../context/hooks/useUIHook";
-import { LoadingSpinner } from "../loading-spinner";
+import { ResponseFormTyped } from "./response-form-type";
+import { ResponseFormAudio } from "./response-form-audio";
 
 const bedrockClient = new BedrockAgentRuntimeClient({
   region: "us-east-1",
@@ -25,10 +19,9 @@ const bedrockClient = new BedrockAgentRuntimeClient({
   },
 });
 
-type Props = {
-  activeQuestionText: string;
-};
-export const CandidateResponseBlock = ({ activeQuestionText }: Props) => {
+export const CandidateResponseBlock = () => {
+  const [responseTypeComponent, setResponseTypeComponent] =
+    useState<string>("typed");
   const { state, dispatch } = useUI();
 
   const { invokeAgent: invokeStep1 } = useAgentInvoke({
@@ -48,389 +41,156 @@ export const CandidateResponseBlock = ({ activeQuestionText }: Props) => {
   //console.log("activeQuestionText", activeQuestionText);
   // const [activeQuestion, setActiveQuestion] =
   //   useState<string>(activeQuestionText);
+
   const [cvStr, setCvStr] = useState<string | null>(null);
-  const [exampleAnswer, setExampleAnswer] = useState<string | undefined>(
+  const [modelAnswer, setmodelAnswer] = useState<string | undefined>(undefined);
+  // candidateAnswer
+  const [candidateAnswer, setCandidateAnswer] = useState<string | undefined>(
     undefined
   );
+
   const [analysis, setAnalysis] = useState<string | undefined>(undefined);
   const [showFeedback, setShowFeedback] = useState<boolean>(false);
-  const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [transcription, setTranscription] = useState<string>("");
-  const [allSentences, setAllSentences] = useState<string[]>([]);
-  const { processText, flush } = useSentenceProcessor();
+
   const { cvContent, jobDescription } = useGetCvJob();
-
-  const [error, setError] = useState<string | null>(null);
-
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const workletNodeRef = useRef<AudioWorkletNode | null>(null);
-
-  // Constants for audio configuration
-  const SAMPLE_RATE = 48000;
-
-  useEffect(() => {
-    return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log("error", error);
-  }, [error]);
-
-  const startTranscription = useCallback(
-    async (getAudioStream: any) => {
-      try {
-        const transcribeClient = new TranscribeStreamingClient({
-          region: "eu-west-1",
-          credentials: {
-            accessKeyId: import.meta.env.VITE_AWSACCESSKEY,
-            secretAccessKey: import.meta.env.VITE_AWSSECRETKEY,
-          },
-        });
-
-        const command = new StartStreamTranscriptionCommand({
-          LanguageCode: "en-GB",
-          MediaEncoding: "pcm",
-          MediaSampleRateHertz: SAMPLE_RATE,
-          AudioStream: getAudioStream(),
-        });
-
-        const data = await transcribeClient.send(command);
-        console.log("Transcribe session established ", data.SessionId);
-
-        if (data.TranscriptResultStream) {
-          for await (const event of data.TranscriptResultStream) {
-            if (event?.TranscriptEvent?.Transcript) {
-              for (const result of event?.TranscriptEvent?.Transcript.Results ||
-                []) {
-                // Only process results that are final (not partial)
-                if (
-                  !result.IsPartial &&
-                  result?.Alternatives &&
-                  result?.Alternatives[0].Items
-                ) {
-                  let currentSegment = "";
-
-                  // Concatenate all items in this result
-                  for (const item of result.Alternatives[0].Items) {
-                    currentSegment += ` ${item.Content}`;
-                  }
-
-                  // Process for sentences using our hook
-                  const completeSentences = processText(currentSegment);
-
-                  // Output each complete sentence
-                  if (completeSentences.length > 0) {
-                    // Update all sentences state
-                    setAllSentences((prev) => [...prev, ...completeSentences]);
-
-                    // Set the most recent sentence as current transcription
-                    setTranscription(
-                      completeSentences[completeSentences.length - 1]
-                    );
-
-                    // Log each sentence
-                    completeSentences.forEach((sentence) => {
-                      console.log(`Complete sentence: ${sentence}`);
-                    });
-                  }
-                }
-              }
-            }
-          }
-
-          // When stream ends, flush any remaining text
-          const finalSentences = flush();
-          if (finalSentences.length > 0) {
-            setAllSentences((prev) => [...prev, ...finalSentences]);
-            setTranscription(finalSentences[finalSentences.length - 1]);
-
-            finalSentences.forEach((sentence) => {
-              console.log(`Final sentence: ${sentence}`);
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error in transcription:", error);
-      }
-    },
-    [processText, flush]
-  );
-
-  const startRecording = useCallback(async (): Promise<void> => {
-    streamRef.current = await window.navigator.mediaDevices.getUserMedia({
-      video: false,
-      audio: true,
-    });
-
-    const AudioContext = window.AudioContext;
-    audioContextRef.current = new AudioContext({
-      sampleRate: SAMPLE_RATE,
-    });
-
-    const source1 = audioContextRef?.current.createMediaStreamSource(
-      streamRef.current
-    );
-
-    const recordingprops: RecordingProperties = {
-      numberOfChannels: 1,
-      sampleRate: audioContextRef.current.sampleRate,
-      maxFrameCount: (audioContextRef.current.sampleRate * 1) / 10,
-    };
-
-    try {
-      await audioContextRef.current.audioWorklet.addModule(
-        "/recording-processor.js"
-      );
-    } catch (error) {
-      console.log(`Add module error ${error}`);
-    }
-    const mediaRecorder = new AudioWorkletNode(
-      audioContextRef.current,
-      "recording-processor",
-      {
-        processorOptions: recordingprops,
-      }
-    );
-
-    const destination = audioContextRef.current.createMediaStreamDestination();
-
-    mediaRecorder.port.postMessage({
-      message: "UPDATE_RECORDING_STATE",
-      setRecording: true,
-    });
-
-    source1.connect(mediaRecorder).connect(destination);
-    mediaRecorder.port.onmessageerror = (error) => {
-      console.log(`Error receving message from worklet ${error}`);
-    };
-
-    const audioDataIterator = pEvent.iterator<
-      "message",
-      MessageEvent<MessageDataType>
-    >(mediaRecorder.port, "message");
-
-    const getAudioStream = async function* () {
-      for await (const chunk of audioDataIterator) {
-        if (chunk.data.message === "SHARE_RECORDING_BUFFER") {
-          const abuffer = pcmEncode(chunk.data.buffer[0]);
-          const audiodata = new Uint8Array(abuffer);
-          // console.log(`processing chunk of size ${audiodata.length}`);
-          yield {
-            AudioEvent: {
-              AudioChunk: audiodata,
-            },
-          };
-        }
-      }
-    };
-
-    startTranscription(getAudioStream);
-  }, [startTranscription]);
-
-  const stopRecording = useCallback(async (): Promise<void> => {
-    if (!isRecording) return;
-
-    try {
-      // Tell the processor to stop recording
-      if (workletNodeRef.current) {
-        workletNodeRef.current.port.postMessage({
-          message: "UPDATE_RECORDING_STATE",
-          setRecording: false,
-        });
-      }
-
-      // Clean up
-      if (workletNodeRef.current) {
-        workletNodeRef.current.disconnect();
-        workletNodeRef.current = null;
-      }
-
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-        streamRef.current = null;
-      }
-
-      if (audioContextRef.current) {
-        await audioContextRef.current.close();
-        audioContextRef.current = null;
-      }
-
-      setIsRecording(false);
-    } catch (err) {
-      console.error("Error stopping recording:", err);
-      setError(
-        `Error processing audio: ${
-          err instanceof Error ? err.message : String(err)
-        }`
-      );
-    }
-  }, [isRecording]);
-
-  useEffect(() => {
-    const recordingStatus = document.getElementById("recordingStatus");
-    const recordingIndicator = document.getElementById("recordingIndicator");
-
-    if (recordingStatus?.textContent) {
-      if (isRecording) {
-        // Start recording
-        startRecording();
-        console.log("Start recording");
-        recordingStatus.textContent = "Recording...";
-        recordingIndicator?.classList.remove("bg-gray-500");
-        recordingIndicator?.classList.add("animate-pulse", "bg-red-500");
-      } else {
-        // Stop recording
-        stopRecording();
-        console.log("Stop recording");
-        recordingStatus.textContent = "Mic Off";
-        recordingIndicator?.classList.remove("animate-pulse", "bg-red-500");
-        recordingIndicator?.classList.add("bg-gray-500");
-        // stop MediaRecorder
-      }
-    }
-  }, [isRecording, startRecording, stopRecording]);
-
-  useEffect(() => {
-    transcription && console.log("Transcription: ", transcription);
-  }, [transcription]);
 
   const generateModelAnswer = useCallback(async () => {
     const result = await invokeStep1(
-      `${cvStr}. This is the interview question ${activeQuestionText}`
+      `${cvStr}. This is the interview question ${state.data.activeQuestionText}`
     );
     if (result) {
       return result;
     }
-  }, [activeQuestionText, cvStr, invokeStep1]);
+  }, [state.data.activeQuestionText, cvStr, invokeStep1]);
 
   useEffect(() => {
-    if (!state.isAnswerVisible) {
-      setExampleAnswer(undefined);
-      setShowFeedback(false);
+    if (candidateAnswer) {
+      getFeedback();
     }
-  }, [state.isAnswerVisible]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [candidateAnswer]);
 
-  const populateWithExample = (isExampleVisible: boolean) => {
-    if (isExampleVisible) {
-      // console.log("hide example clicked");
-      setExampleAnswer(undefined);
-      dispatch({
-        type: "SET_ANSWER",
-        payload: { isActive: false },
-      });
-    } else {
-      // console.log("show example clicked");
-      dispatch({
-        type: "SET_LOADING",
-        payload: { isLoading: true },
-      });
-      generateModelAnswer().then(async (modelAnswer) => {
-        setExampleAnswer(modelAnswer);
-        dispatch({
-          type: "SET_ANSWER",
-          payload: { isActive: true },
-        });
-        dispatch({
-          type: "SET_LOADING",
-          payload: { isLoading: false },
-        });
-      });
-    }
-  };
+  // useEffect(() => {
+  //   if (!state.isAnswerVisible) {
+  //     setmodelAnswer(undefined);
+  //     setShowFeedback(false);
+  //   }
+  // }, [state.isAnswerVisible]);
 
-  const getFeedback = async () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const copyContentToState = () => {
+  //   if (transcriptionRef.current) {
+  //     // Get the text content from the div
+  //     const content =
+  //       transcriptionRef.current.textContent || "No candidate answer provided";
+  //     setCandidateAnswer(content);
+  //     //setTranscription(content);
+  //     generateModelAnswer().then((modelAnswer) => {
+  //       setmodelAnswer(modelAnswer);
+  //     });
+  //   }
+  // };
+
+  // const startStopRecording = () => {
+  //   setIsRecording(!isRecording);
+  //   if (isRecording) {
+  //     // state is behind
+  //     console.log("clicked to end recording", isRecording);
+  //     if (transcriptionRef.current) {
+  //       // Get the text content from the div
+  //       const transcription =
+  //         transcriptionRef.current.textContent ||
+  //         "No candidate answer provided";
+  //       setCandidateAnswer(transcription);
+  //     }
+  //   }
+  // };
+
+  // const populateWithExample = (isExampleVisible: boolean) => {
+  //   if (isExampleVisible) {
+  //     // console.log("hide example clicked");
+  //     setmodelAnswer(undefined);
+  //     dispatch({
+  //       type: "SET_ANSWER",
+  //       payload: { isActive: false },
+  //     });
+  //   } else {
+  //     // console.log("show example clicked");
+  //     dispatch({
+  //       type: "SET_LOADING",
+  //       payload: { isLoading: true },
+  //     });
+  //     generateModelAnswer().then(async (modelAnswer) => {
+  //       setmodelAnswer(modelAnswer);
+  //       dispatch({
+  //         type: "SET_ANSWER",
+  //         payload: { isActive: true },
+  //       });
+  //       dispatch({
+  //         type: "SET_LOADING",
+  //         payload: { isLoading: false },
+  //       });
+  //     });
+  //   }
+  // };
+
+  async function getFeedback() {
     const result = await invokeStep2(
-      `${cvStr}. This is the interview question ${activeQuestionText}, and this is the model answer ${exampleAnswer}. The candidate's answer is: ${exampleAnswer}`
+      `${cvStr}. This is the interview question ${state.data.activeQuestionText}, and this is the model answer ${modelAnswer}. The candidate's answer is: ${candidateAnswer}`
     );
     if (result) {
       setAnalysis(result);
       setShowFeedback(true);
       // add to DB
     }
-  };
+  }
 
   useEffect(() => {
     if (cvContent && jobDescription) {
       const parsed = extractValues(cvContent);
-      setCvStr(
-        `This is the candidates CV: ${parsed} \n\n This is the job the candidate is going for ${jobDescription}`
-      );
+      const output =
+        `This is the candidates CV: ${parsed} \n\n This is the job the candidate is going for ${jobDescription}` as string;
+      dispatch({
+        type: "SET_CV_DESC",
+        payload: { data: { cvJobDescStr: output } },
+      });
     }
-  }, [cvContent, jobDescription]);
+  }, [cvContent, dispatch, jobDescription]);
 
   return (
     <div>
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-        Your Response
-      </h3>
-
-      <div className="flex items-center mb-4">
-        <div
-          id="recordingIndicator"
-          className="w-3 h-3 bg-gray-500 rounded-full"
-        ></div>
-        <span
-          id="recordingStatus"
-          className="ml-2 text-gray-600 dark:text-gray-400"
-        >
-          Mic Off
-        </span>
-        <button
-          onClick={() => {
-            setIsRecording(!isRecording);
-          }}
-          className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          {isRecording ? "Get Answers" : "Start Recording"}
-        </button>
-      </div>
-
       <div className="mb-6">
-        <h4 className="flex justify-between items-center text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          Real-time Transcript:{" "}
-          <div
-            className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer select-none transition-colors text-sm"
-            onClick={() => populateWithExample(state.isAnswerVisible)}
-          >
-            {state.isAnswerVisible ? "Hide Example" : "Suggested Answer (AI)"}
-          </div>
-        </h4>
-
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 min-h-52 max-h-52 overflow-y-auto">
-          <div className="text-gray-700 dark:text-gray-300">
-            {!exampleAnswer && !state.showLoadingSpinner && (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: allSentences.join(" . <br /> <br />"),
-                }}
-              />
-            )}
-            {state.showLoadingSpinner && (
-              <div className="flex items-center justify-center min-h-48">
-                <LoadingSpinner />
-              </div>
-            )}
-            {!state.showLoadingSpinner && exampleAnswer && (
-              <div className="ai-markdown">
-                <Markdown>{exampleAnswer}</Markdown>
-              </div>
-            )}
-          </div>
-        </div>
-        {state.isAnswerVisible && (
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          Your Response
+        </h3>
+        <div className="flex">
           <button
-            onClick={() => {
-              getFeedback();
-            }}
-            className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 float-right mt-2"
+            className={`px-6 py-1 text-lg font-medium ${
+              responseTypeComponent === "audio"
+                ? "border-b-2 border-blue-500 dark:text-white"
+                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+            onClick={() => setResponseTypeComponent("audio")}
           >
-            Get Feedback
+            Record Your Response
           </button>
+          <button
+            className={`px-6 py-1 text-sm font-medium ${
+              responseTypeComponent === "typed"
+                ? "border-b-2 border-blue-500 dark:text-white"
+                : "text-gray-500 hover:text-gray-700  dark:hover:text-gray-300"
+            }`}
+            onClick={() => setResponseTypeComponent("typed")}
+          >
+            Type Your Response
+          </button>
+        </div>
+      </div>
+      <div className="mb-2">
+        {responseTypeComponent === "typed" ? (
+          <ResponseFormTyped />
+        ) : (
+          <ResponseFormAudio />
         )}
       </div>
 
@@ -438,9 +198,9 @@ export const CandidateResponseBlock = ({ activeQuestionText }: Props) => {
         <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           AI Feedback:
         </h4>
-        {showFeedback && (
+        {state.data.analysisResult && (
           <div className="text-gray-700 dark:text-gray-300 ai-markdown">
-            <Markdown>{analysis}</Markdown>
+            <Markdown>{state.data.analysisResult}</Markdown>
           </div>
         )}
         {!showFeedback && (

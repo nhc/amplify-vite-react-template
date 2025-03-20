@@ -8,7 +8,14 @@ import {
 const initialState: UIState = {
   isAnswerVisible: false,
   showLoadingSpinner: false,
-  isProfileVisible: false,
+  focusOnResponse: true,
+  data: {
+    modelAnswer: "",
+    activeQuestionText: "",
+    candidateAnswer: "",
+    cvJobDescStr: "",
+    analysisResult: "",
+  },
 };
 
 export const MockInterviewUIContext = createContext<{
