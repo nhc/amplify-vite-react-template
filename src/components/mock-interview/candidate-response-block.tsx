@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { BedrockAgentRuntimeClient } from "@aws-sdk/client-bedrock-agent-runtime";
 import { useAgentInvoke } from "../../hooks/useAgentInvoke";
 import { v4 as uuidv4 } from "uuid";
@@ -24,12 +22,12 @@ export const CandidateResponseBlock = () => {
     useState<string>("typed");
   const { state, dispatch } = useUI();
 
-  const { invokeAgent: invokeStep1 } = useAgentInvoke({
-    agentId: "J19DVUUHWZ",
-    agentAliasId: "KQGEWPHQX1",
-    sessionId: uuidv4(),
-    bedrockClient,
-  });
+  // const { invokeAgent: invokeStep1 } = useAgentInvoke({
+  //   agentId: "J19DVUUHWZ",
+  //   agentAliasId: "KQGEWPHQX1",
+  //   sessionId: uuidv4(),
+  //   bedrockClient,
+  // });
 
   const { invokeAgent: invokeStep2 } = useAgentInvoke({
     agentId: "X3NLVYV0HD",
@@ -38,26 +36,25 @@ export const CandidateResponseBlock = () => {
     bedrockClient,
   });
 
-  const [cvStr, setCvStr] = useState<string | null>(null);
-  const [modelAnswer, setmodelAnswer] = useState<string | undefined>(undefined);
+  const [cvStr] = useState<string | null>(null);
+  const [modelAnswer] = useState<string | undefined>(undefined);
   // candidateAnswer
-  const [candidateAnswer, setCandidateAnswer] = useState<string | undefined>(
-    undefined
-  );
+  const [candidateAnswer] = useState<string | undefined>(undefined);
 
   const [analysis, setAnalysis] = useState<string | undefined>(undefined);
+  console.log("analysis", analysis);
   const [showFeedback, setShowFeedback] = useState<boolean>(false);
 
   const { cvContent, jobDescription } = useGetCvJob();
 
-  const generateModelAnswer = useCallback(async () => {
-    const result = await invokeStep1(
-      `${cvStr}. This is the interview question ${state.data.activeQuestionText}`
-    );
-    if (result) {
-      return result;
-    }
-  }, [state.data.activeQuestionText, cvStr, invokeStep1]);
+  // const generateModelAnswer = useCallback(async () => {
+  //   const result = await invokeStep1(
+  //     `${cvStr}. This is the interview question ${state.data.activeQuestionText}`
+  //   );
+  //   if (result) {
+  //     return result;
+  //   }
+  // }, [state.data.activeQuestionText, cvStr, invokeStep1]);
 
   useEffect(() => {
     if (candidateAnswer) {
