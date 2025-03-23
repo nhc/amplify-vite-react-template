@@ -45,12 +45,6 @@ export const ResponseFormTyped = () => {
             payload: { focusOnResponse: true },
           });
         }}
-        // onBlur={() => {
-        //   dispatch({
-        //     type: "SET_FOCUS_ON_RESPONSE",
-        //     payload: { focusOnResponse: false },
-        //   });
-        // }}
         onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
           dispatch({
             type: "SET_CANDIDATE_ANSWER",

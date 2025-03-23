@@ -38,10 +38,6 @@ export const CandidateResponseBlock = () => {
     bedrockClient,
   });
 
-  //console.log("activeQuestionText", activeQuestionText);
-  // const [activeQuestion, setActiveQuestion] =
-  //   useState<string>(activeQuestionText);
-
   const [cvStr, setCvStr] = useState<string | null>(null);
   const [modelAnswer, setmodelAnswer] = useState<string | undefined>(undefined);
   // candidateAnswer
@@ -203,6 +199,7 @@ export const CandidateResponseBlock = () => {
             <Markdown>{state.data.analysisResult}</Markdown>
           </div>
         )}
+
         {!showFeedback && (
           <div className="text-gray-700 dark:text-gray-300 ai-markdown">
             Please record a response to get feedback
