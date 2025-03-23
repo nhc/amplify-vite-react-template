@@ -1,23 +1,23 @@
 import { useState } from "react";
 import { NavItem } from "./navigation-item";
 import { NavLink } from "react-router";
+import { signOut } from "aws-amplify/auth";
+import { useAuthenticator } from "@aws-amplify/ui-react";
 
 export function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { authStatus } = useAuthenticator((context) => [context.user]);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle("dark");
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
-    // <nav className="flex justify-between items-center p-5">
-    //   <div className="">LEFT ALIGNED</div>
-    //   <div className="flex-grow text-center ">
-    //     <div>Center</div>
-    //   </div>
-    //   <div className="">RIGHT ALIGNED</div>
-    // </nav>
     <nav className="bg-white dark:bg-gray-800 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -30,15 +30,12 @@ export function Navbar() {
           </div>
           <div className="flex-grow text-center ">
             <div className="space-x-4">
-              <NavItem
-                href="/upload-documents"
-                text="Upload / Paste Documents"
-              />
+              <NavItem href="/upload-documents" text="Upload Documents" />
               <NavItem href="/analysis" text="Analysis" />
               <NavItem href="/mock-interview" text="Mock Interview" />
             </div>
           </div>
-          <div className="">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => toggleDarkMode()}
               className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700"
@@ -57,6 +54,14 @@ export function Navbar() {
                 ></path>
               </svg>
             </button>
+            {authStatus === "authenticated" && (
+              <button
+                onClick={() => handleSignOut()}
+                className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-black dark:text-white"
+              >
+                Sign Out
+              </button>
+            )}
           </div>
         </div>
       </div>

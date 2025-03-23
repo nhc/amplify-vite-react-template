@@ -8,6 +8,14 @@ specifies that any user authenticated via an API key can "create", "read",
 =========================================================================*/
 const schema = a
   .schema({
+    exampleCV: a.model({
+      title: a.string(),
+      content: a.string(),
+    }),
+    exampleJobDescription: a.model({
+      title: a.string(),
+      content: a.string(),
+    }),
     extractedFileContent: a.model({
       uploadedFilePath: a.string(),
       content: a.json(),
@@ -21,6 +29,7 @@ const schema = a
       extractedFileContent: a.hasOne("extractedFileContent", "uploadedFileId"),
       jobDescription: a.hasMany("jobDescription", "uploadedFileId"),
     }),
+
     jobDescription: a.model({
       role: a.string(),
       content: a.string(),

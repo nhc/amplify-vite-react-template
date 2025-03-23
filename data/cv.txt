@@ -1,0 +1,184 @@
+Personal Statement
+I am a creative full stack agile software developer with over 20 years experience in both contract
+and full time positions. I've worked small projects, all the way up to leading a six man
+development team and contributing to company digital strategy.
+I take a level headed and logical approach to projects and enjoy attention to detail. I am keen to
+try new ideas while not reinventing the wheel each time. I am familiar with all aspects of
+software development and management from planning and strategy, through to development
+(front and back), CI/CD and performance tweaking focussing on the agile methodology.
+Key Technical Skills
+Key Business Skills
+I can learn most things given the manual and a couple
+Business requirements capture.
+of days. I have built products and I am most familiar
+with the following:
+Prototyping ideas.
+Frontend: React (Since 2017), VueJS, Typescript
+User experience (UX) planning
+(Since 2020), CSS (+ Preprocessors), NextJS. Modern
+build tools like Vite, Webpack, eslint.
+Project analysis, planning and
+delivery using the AGILE
+Backend: Typescript / NodeJS (Express, Serverless
+methodology.
+Functions), PHP (Custom, Zend, Laravel, Wordpress,
+CraftCMS), Ruby on Rails, REST, GraphQL,
+Stand in scrum master and leader of
+daily stand-ups.
+Database: MongoDb, MySql, Postgres, MSSQL.
+ORM's like Prisma.
+Great spoken communication of
+ideas and technologies to non tech
+Platforms / Servers / Services: Azure Devops,
+people.
+Amazon Web Services, Nginx, Apache, Vercel,
+Railway, NPM, Git and Github, Bitbucket,
+Confident in front of the client /
+Containerisation with Docker.
+running client meetings and
+presentations.
+Automation: Developed creative solutions for
+automating workflows, generating reports, and chatbot
+customer service solutions.
+Testing: Jest, Cypress.lo
+Employment History and Career Highlights
+Nov 2020 - Current Employment. Sycous 60 + employees
+Senior Front End Software Developer (Full Time)
+Working in the energy industry, specifically in the metering and billing sector, I was employed to
+run a small team working for a sibling company Brunata,com, which is based in Copenhagen.
+Operating fully remotely I was tasked with the planning / development / testing and continuous
+deployment of the entire front end, which was part of a flagship project for the Danish company.
+-
+Responsible for deciding on the tools and testing systems used in the successful development of
+this 'smart buildings' project.
+-
+Used React and Typescript for the core project and spend 3 years working on basic then onto
+advanced features based around a micro-services architecture in the form of RESTFUL api's.
+-
+Used cypress.io to create a comprehensive set of end to end tests.
+-
+Delivered regular demo's and releases to senior stakeholders across the business.
+-
+Leveraged Docker containers and Nginx for CI/CD pipelines in Azure DevOps.
+-
+Successfully completed the project based on the timelines and handed over to a team based in
+Copenhagen which involved training some juniors and providing detailed documentation of our
+code.
+-
+After 3 years I was moved into the core team at Sycous and work on the core product Mabdeck
+which involves backend development with C#, AspDotNet with frontend in Vue.js.
+Feb 2018 to Sept 2020 - MadeByExtreme.com 30+ employees
+Senior Software Developer (Full Time)
+I was brought into this team of 6 to help with a flagging, difficult and unique web ecommerce
+project. An established bricks and mortar business with 80,000+ building and DIY products and
+over 80 stores across the UK. Outside of this I worked on various client projects when I was
+needed.
+-
+Responsible for the REST PHP api which communicated between the site and some custom
+middleware. Covered members, accounts, products, prices, discounts and delivery functions.
+-
+Responsible for the MongoDB based middleware including new features and maintenance.
+-
+Responsible for the nightly communication with the ancient internal stock control system which
+controlled everything from members preferences to stock to prices.
+-
+Used defensive programming techniques and proper failsafe programming for when data was
+regularly corrupted from the host system and recovery, there from.
+-
+The owner and driving force of testing across the whole company focusing a lot on Cypress.io.
+Responsible for testing standards and onboarding new staff.
+-
+Gave regular dev talks to the team.
+-
+Owned and ran a simple chatbot customer service solution made in React.
+-
+Automating workload by writing creative solutions for generating reports.
+-
+Researching and suggesting new tech and consulted on new company offerings.
+April 2017 to Feb 2018 - Advanced Digital Innovation (Contract)
+Software Engineer
+Working on one product which was based around health records for the NHS. Both a web
+(PWA) and mobile version. React (in Javascript) and Laravel based.
+-
+Working in an agile environment with continuous deployment.
+-
+Delivering software based on user stories. Authored user stories.
+-
+Writing and deploying software mostly as API's (microservices) that are part of a complex system
+that integrates directly with the NHS. Used Jenkins.
+-
+Writing QA tests in all disciplines.
+-
+Training new members of the team.
+2011 to Present - Bleep Systems LTD
+Freelancer / Owner / Developer
+Building and consulting on web based software projects. I 'slot in' as part of a bigger team or
+take the lead on planning and delivering a whole project.
+-
+Spent 4 months of 2020 working on a React project for a charity.
+-
+Pitching and specifying web based software projects based on client requirements.
+-
+Presenting and writing complex proposals and quotes.
+-
+Setting up of projects including plans, servers, version control and code bases.
+-
+Writing code and delivering projects on time and budget.
+-
+Maintaining relationships and selling new ideas and products to clients.
+2013 to 2014 - Bluestone98.com
+Head of Digital (Freelance Consultant)
+-
+Brought on board to help to turn around the failing digital arm of the business.
+-
+Standardised the way projects were run and trained up a small team of developers between UK
+and India.
+-
+Responsible for all digital output during my time there.
+2009 to 2011 - Engageinteractive.co.uk
+Senior Developer (Full Time)
+-
+Employee number 4 of this now very successful Leeds agency I laid the foundations for the
+development side of business for its early formative years.
+-
+Clients included Bella Italia, Belgo, Cafe Rouge and Giraffe restaurants.
+-
+Wrote content for a number of print publications.
+-
+Designed a company wide CMS to be used in the formative years of this company.
+2007 to 2009 - Magnitude
+Lead Developer (Full Time)
+-
+Won a Webby Award for wagamama.com in 2008.
+-
+Headed up a 6 man development team at this marketing agency.
+-
+Built a custom CRM, CMS for Wagamama.
+-
+Devised and deployed a training plan and for Wagamama staff in 12 countries and ran a 2 day
+seminar to deliver training on the system.
+2005 to 2014 - hypetypestudio.com
+Lead Developer (Freelance)
+-
+Worked with the owner Paul in a freelance capacity and was responsible for all their digital
+output for many years. Hypetype is primarily a graphic design / branding agency and I was
+able to handle all the work on a freelance basis. Many brochureware websites with basic
+CMS.
+2000 to 2004 - www.tuimedia.com
+Junior Developer
+-
+Worked on one of the first incarnations of Asda Shopping and The Halifax building society.
+-
+Built some early web games for bt.com
+-
+Worked on the website for DaftPunk and their discovery album
+Education
+| view myself as a lifelong learner. I love reading and learning new things.
+-
+Master of Science in Multimedia / Internet Applications from Teesside University (2000)
+-
+BA (Hons) Business Studies (2:1) Leeds Metropolitan University (1998)
+-
+4 A Levels, 10 GCSE's test.tsx:68:14
+
+​
