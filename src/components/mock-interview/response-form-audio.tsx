@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useUI } from "../../context/hooks/useUIHook";
 import { TextArea } from "./common/textarea";
@@ -28,6 +27,7 @@ export const ResponseFormAudio = () => {
 
   const transcriptionRef = useRef<HTMLDivElement>(null);
 
+  console.log(transcription, allSentences, transcriptionRef);
   useEffect(() => {
     console.log("error", error);
   }, [error]);

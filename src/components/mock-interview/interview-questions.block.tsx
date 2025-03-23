@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import { Question } from "../../components/mock-interview/question";
 import { IInterviewQuestion } from "../../types/prompt-formats/questions";
@@ -14,7 +13,7 @@ Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 export const InterviewQuestionsBlock = () => {
-  const { state, dispatch } = useUI();
+  const { dispatch } = useUI();
   const [questionsList, setQuestionsList] = useState<IInterviewQuestion[]>(
     [] as IInterviewQuestion[]
   );
@@ -27,6 +26,7 @@ export const InterviewQuestionsBlock = () => {
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
+  console.log(activeQ, activeNonQ);
   // Use our custom hook
   useKeyboardNavigation(activeIndex, questionsList?.length - 1, setActiveIndex);
 
