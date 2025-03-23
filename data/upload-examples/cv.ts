@@ -1,7 +1,20 @@
-export const exampleCVData = {
-  cv1: {
-    title: "Example Charity CV",
-    content: `### Nice Person  
+// Type definitions
+type CVContent = {
+  title: string;
+  content: string;
+};
+
+type CVItem = {
+  [key: `cv${number}`]: CVContent;
+};
+
+export type CVDataArray = CVItem[];
+
+export const exampleCVData: CVDataArray = [
+  {
+    cv1: {
+      title: "Example Charity CV",
+      content: `### Nice Person  
             Email: forename.surname@email.com | Mobile: 07123 456789 | LinkedIn: linkedin.com/in/forenamesurname  
 
             ---
@@ -70,10 +83,10 @@ export const exampleCVData = {
             ### References  
 
             Available upon request.`,
-  },
-  cv2: {
-    title: "Business / Project Manager CV",
-    content: `### Maxine Corry  
+    },
+    cv2: {
+      title: "Business / Project Manager CV",
+      content: `### Maxine Corry  
             123 Elm Street, Springfield, SP1 2AB  
             Ph: 0123 456 7890  
             Email: maxine_c@dayjob.com  
@@ -183,10 +196,10 @@ export const exampleCVData = {
             ### References  
 
             Available upon request.`,
-  },
-  cv3: {
-    title: "Example Science CV",
-    content: `Molly Dunham
+    },
+    cv3: {
+      title: "Example Science CV",
+      content: `Molly Dunham
             email@email.com, 06022140760
             Education
             2021 - 2024 BSc (Hons) Chemistry
@@ -265,13 +278,26 @@ export const exampleCVData = {
             • Participated in the University’s Hockey league where matches were played fortnightly on Sundays,
             leading the team as captain to a league victory in the 2023-24 season.
             References available on request`,
+    },
   },
+];
+
+type JobDescription = {
+  title: string;
+  content: string;
 };
 
-export const exampleJobDesc = {
-  description1: {
-    title: `Charity Shop`,
-    content: `### Shop Manager's Assistant – Exciting New Store Opening in Falmouth!  
+type DescriptionItem = {
+  [key: `description${number}`]: JobDescription;
+};
+
+export type JobDescArray = DescriptionItem[];
+
+export const exampleJobDesc: JobDescArray = [
+  {
+    description1: {
+      title: `Charity Shop`,
+      content: `### Shop Manager's Assistant – Exciting New Store Opening in Falmouth!  
 
 **Location:** Falmouth  
 **Contract Type:** Permanent  
@@ -359,10 +385,10 @@ If you'd like to learn more about this opportunity, please visit our website or 
 **Interview Date:** Tuesday, 1st April 2025.  
 
 Be part of something special and help us make a difference in the Falmouth community!`,
-  },
-  description2: {
-    title: `Project Manager`,
-    content: `### Project Manager Opportunity – Defence Sector  
+    },
+    description2: {
+      title: `Project Manager`,
+      content: `### Project Manager Opportunity – Defence Sector  
 
 **Excelsior Solutions** is thrilled to offer an exciting opportunity to join our team as a **Project Manager**, supporting one of our key clients in the defence sector. In this role, you will lead a small team and manage resources across dynamic, evolving projects. We are seeking a candidate with a strong project management skillset and experience in industries such as defence, aerospace, marine, nuclear, engineering, or construction.  
 
@@ -399,10 +425,10 @@ This position is offered on a **12-month contract** with hybrid working arrangem
 Due to the **RESTRICTED** nature of the work, candidates must either hold or be eligible to obtain **SC clearance** prior to starting on-site.  
 
 If you are a motivated and experienced Project Manager looking to make an impact in the defence sector, we encourage you to apply for this exciting opportunity.`,
-  },
-  description3: {
-    title: `Graduate Chemist`,
-    content: `### Graduate Chemist  
+    },
+    description3: {
+      title: `Graduate Chemist`,
+      content: `### Graduate Chemist  
 
 **Location:** Confidential, Commutable to the West Midlands Area  
 **Salary:** Competitive, Dependent on Experience  
@@ -448,5 +474,6 @@ By joining our team, you’ll benefit from:
 If you’re a recent Chemistry graduate looking for an exciting opportunity to start your career, we’d love to hear from you!  
 
 **Apply now** to join our team and take the first step in your career as a Graduate Chemist.`,
+    },
   },
-};
+];
