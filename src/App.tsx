@@ -11,9 +11,10 @@ import { Footer } from "./components/footer";
 import { Home } from "./pages/home";
 import { Routes } from "react-router";
 import { CVUpload } from "./pages/cvupload";
-import { Analysis } from "./pages/analysis";
+import { Analysis } from "./components/analysis/analysis";
 import { MockInterview } from "./pages/mockinterview";
 import { useAuthenticator } from "@aws-amplify/ui-react";
+import { AnalysisWrapper } from "./pages/analysis-wrapper";
 
 Amplify.configure(outputs);
 
@@ -31,7 +32,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />}></Route>
             <Route path="/upload-documents" element={<CVUpload />} />
-            <Route path="/analysis" element={<Analysis />} />
+            <Route path="/analysis" element={<AnalysisWrapper />} />
             <Route path="/mock-interview" element={<MockInterview />} />
             {/* <Route path="/test-page" element={<TestPage />} /> */}
             {/* <Route path="/cv-job-analysis" element={<Analysis />} />

@@ -7,16 +7,7 @@ import outputs from "../amplify_outputs.json";
 import { Authenticator } from "@aws-amplify/ui-react";
 import { BrowserRouter } from "react-router";
 
-// Amplify.configure(outputs);
-
-import { parseAmplifyConfig } from "aws-amplify/utils";
-
-const amplifyConfig = parseAmplifyConfig(outputs);
-
-Amplify.configure({
-  ...amplifyConfig,
-  Predictions: outputs.custom.Predictions,
-});
+Amplify.configure(outputs);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
