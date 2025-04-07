@@ -5,7 +5,7 @@ import { BedrockAgentRuntimeClient } from "@aws-sdk/client-bedrock-agent-runtime
 import { useAgentInvoke } from "../../hooks/useAgentInvoke";
 
 const bedrockClient = new BedrockAgentRuntimeClient({
-  region: "us-east-1",
+  region: "us-west-1",
   credentials: {
     accessKeyId: import.meta.env.VITE_AWSACCESSKEY,
     secretAccessKey: import.meta.env.VITE_AWSSECRETKEY,
@@ -20,8 +20,8 @@ export const LLMQuestions = ({ agentSession }: Props) => {
   const { state, dispatch } = useAnalysis();
 
   const { invokeAgent } = useAgentInvoke({
-    agentId: "BWIBILGTGT",
-    agentAliasId: "COHRWY0BO3",
+    agentId: "NFBZPDTI2M",
+    agentAliasId: "UJFVYR992D",
     sessionId: agentSession,
     bedrockClient,
   });
